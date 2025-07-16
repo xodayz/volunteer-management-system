@@ -1,0 +1,88 @@
+---
+---
+
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-logo">
+      <h2>Sistema de Voluntariado</h2>
+    </div>
+    <div class="nav-links">
+      <a href="#home">Inicio</a>
+      <a href="#about">Acerca de</a>
+      <a href="#contact">Contacto</a>
+      <a href="/login" class="login-btn">Iniciar Sesión</a>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 1000;
+    padding: 1rem 0;
+  }
+
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+  }
+
+  .nav-logo h2 {
+    margin: 0;
+    color: #4f46e5;
+    font-weight: 700;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+
+  .nav-links a:hover {
+    color: #4f46e5;
+  }
+
+  .login-btn {
+    background: #4f46e5;
+    color: white !important;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: background 0.3s ease;
+  }
+
+  .login-btn:hover {
+    background: #4338ca;
+    color: white !important;
+  }
+
+  @media (max-width: 768px) {
+    .nav-container {
+      padding: 0 1rem;
+    }
+    
+    .nav-links {
+      gap: 1rem;
+    }
+    
+    .nav-logo h2 {
+      font-size: 1.2rem;
+    }
+  }
+</style>
