@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import RegisterFormOrganizacion from '../components/RegisterFormOrganizacion';
+---
+
+<Layout>
+  <div class="relative">
+    <a href="/" class="absolute top-4 left-4 z-10 text-white/80 hover:text-white transition-colors bg-black/20 backdrop-blur-sm px-3 py-2 rounded-lg">
+      ← Volver al inicio
+    </a>
+    <RegisterFormOrganizacion client:load />
+  </div>
+</Layout>
