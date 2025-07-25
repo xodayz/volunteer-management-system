@@ -1,0 +1,127 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AuthController = exports.registerValidation = exports.loginValidation = void 0;
+const express_validator_1 = require("express-validator");
+const AuthService_1 = require("../services/AuthService");
+exports.loginValidation = [
+    (0, express_validator_1.body)('email')
+        .isEmail()
+        .withMessage('Debe ser un email válido')
+        .normalizeEmail(),
+    (0, express_validator_1.body)('password')
+        .isLength({ min: 6 })
+        .withMessage('La contraseña debe tener al menos 6 caracteres')
+];
+exports.registerValidation = [
+    (0, express_validator_1.body)('username')
+        .isLength({ min: 3, max: 30 })
+        .withMessage('El nombre de usuario debe tener entre 3 y 30 caracteres')
+        .matches(/^[a-zA-Z0-9_]+$/)
+        .withMessage('El nombre de usuario solo puede contener letras, números y guiones bajos'),
+    (0, express_validator_1.body)('nombre')
+        .isLength({ min: 2, max: 50 })
+        .withMessage('El nombre debe tener entre 2 y 50 caracteres')
+        .matches(/^[a-zA-ZÀ-ÿ\s]+$/)
+        .withMessage('El nombre solo puede contener letras y espacios'),
+    (0, express_validator_1.body)('correo')
+        .isEmail()
+        .withMessage('Debe ser un email válido')
+        .normalizeEmail(),
+    (0, express_validator_1.body)('password')
+        .isLength({ min: 6 })
+        .withMessage('La contraseña debe tener al menos 6 caracteres')
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+        .withMessage('La contraseña debe contener al menos una mayúscula, una minúscula y un número'),
+    (0, express_validator_1.body)('telefono')
+        .optional()
+        .matches(/^[0-9+\-\s()]+$/)
+        .withMessage('Formato de teléfono inválido')
+];
+class AuthController {
+    static login(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const errors = (0, express_validator_1.validationResult)(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Datos inválidos',
+                        errors: errors.array()
+                    });
+                }
+                const { email, password } = req.body;
+                const result = yield AuthService_1.AuthService.login({ email, password });
+                const statusCode = result.success ? 200 : 401;
+                res.status(statusCode).json(result);
+            }
+            catch (error) {
+                console.error('Error en login controller:', error);
+                res.status(500).json({
+                    success: false,
+                    message: 'Error interno del servidor'
+                });
+            }
+        });
+    }
+    static register(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const errors = (0, express_validator_1.validationResult)(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Datos inválidos',
+                        errors: errors.array()
+                    });
+                }
+                const result = yield AuthService_1.AuthService.register(req.body);
+                const statusCode = result.success ? 201 : 400;
+                res.status(statusCode).json(result);
+            }
+            catch (error) {
+                console.error('Error en register controller:', error);
+                res.status(500).json({
+                    success: false,
+                    message: 'Error interno del servidor'
+                });
+            }
+        });
+    }
+    static verifyToken(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = req.user;
+                res.json({
+                    success: true,
+                    message: 'Token válido',
+                    user
+                });
+            }
+            catch (error) {
+                console.error('Error verificando token:', error);
+                res.status(500).json({
+                    success: false,
+                    message: 'Error interno del servidor'
+                });
+            }
+        });
+    }
+    static logout(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            res.json({
+                success: true,
+                message: 'Sesión cerrada exitosamente'
+            });
+        });
+    }
+}
+exports.AuthController = AuthController;

@@ -1,23 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import ProtectedRoute from '../components/ProtectedRoute';
+import DashboardComponent from '../components/Dashboard';
 ---
 
 <Layout>
-  <main class="dashboard">
-    <nav class="dashboard-nav">
-      <div class="nav-brand">
-        <h2>Sistema de Voluntariado</h2>
-      </div>
-      <div class="nav-links">
-        <a href="/dashboard">Inicio</a>
-        <a href="/dashboard/opportunities">Oportunidades</a>
-        <a href="/dashboard/my-activities">Mis Actividades</a>
-        <a href="/dashboard/profile">Perfil</a>
-        <a href="/" class="logout">Cerrar Sesión</a>
-      </div>
-    </nav>
-
-    <div class="dashboard-content">
+  <ProtectedRoute client:load>
+    <DashboardComponent client:load />
+  </ProtectedRoute>
+</Layout>
       <header class="dashboard-header">
         <h1>Bienvenido, Voluntario</h1>
         <p>Encuentra tu próxima oportunidad para ayudar</p>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Completo Backend-Database</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #cce7ff; color: #004085; border: 1px solid #99d3ff; }
+        button { padding: 10px 20px; margin: 5px; font-size: 16px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Completo: Frontend → Backend → Database</h1>
+    
+    <div id="results"></div>
+    
+    <h2>Controles de Prueba:</h2>
+    <button onclick="testRegister()">🆕 Probar Registro</button>
+    <button onclick="testLogin()">🔐 Probar Login</button>
+    <button onclick="testVerifyToken()">✅ Verificar Token</button>
+    <button onclick="clearResults()">🗑️ Limpiar Resultados</button>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+        let currentToken = null;
+
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${message}`;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function testRegister() {
+            const randomId = Math.floor(Math.random() * 10000);
+            const userData = {
+                username: `user${randomId}`,
+                nombre: `Usuario ${randomId}`,
+                correo: `user${randomId}@test.com`,
+                password: 'Password123',
+                telefono: '1234567890'
+            };
+
+            log('🔄 Iniciando prueba de registro...', 'info');
+            log(`📝 Datos del usuario: ${JSON.stringify(userData, null, 2)}`);
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData),
+                });
+
+                const data = await response.json();
+                
+                if (response.status === 201 && data.success) {
+                    currentToken = data.token;
+                    log(`✅ Registro exitoso! Usuario creado con ID: ${data.user.id_usuario}`, 'success');
+                    log(`🔑 Token recibido: ${data.token.substring(0, 20)}...`);
+                    log(`👤 Datos del usuario: ${JSON.stringify(data.user, null, 2)}`);
+                } else {
+                    log(`❌ Error en registro: ${data.message}`, 'error');
+                    if (data.errors) {
+                        log(`📋 Errores de validación: ${JSON.stringify(data.errors, null, 2)}`, 'error');
+                    }
+                }
+            } catch (error) {
+                log(`💥 Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function testLogin() {
+            log('🔄 Iniciando prueba de login...', 'info');
+            
+            const loginData = {
+                email: 'test@example.com',
+                password: 'Password123'
+            };
+
+            log(`📝 Credenciales: ${JSON.stringify(loginData, null, 2)}`);
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(loginData),
+                });
+
+                const data = await response.json();
+                
+                if (response.status === 200 && data.success) {
+                    currentToken = data.token;
+                    log(`✅ Login exitoso! Bienvenido ${data.user.nombre}`, 'success');
+                    log(`🔑 Token recibido: ${data.token.substring(0, 20)}...`);
+                    log(`👤 Datos del usuario: ${JSON.stringify(data.user, null, 2)}`);
+                } else {
+                    log(`❌ Error en login: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                log(`💥 Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function testVerifyToken() {
+            if (!currentToken) {
+                log('⚠️ No hay token disponible. Haz login primero.', 'error');
+                return;
+            }
+
+            log('🔄 Verificando token...', 'info');
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/verify`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const data = await response.json();
+                
+                if (response.status === 200 && data.success) {
+                    log(`✅ Token válido! Usuario verificado: ${data.user.nombre}`, 'success');
+                    log(`👤 Datos del usuario: ${JSON.stringify(data.user, null, 2)}`);
+                } else {
+                    log(`❌ Token inválido: ${data.message}`, 'error');
+                    currentToken = null;
+                }
+            } catch (error) {
+                log(`💥 Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function runInitialTests() {
+            log('🚀 Iniciando tests automáticos...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/test`);
+                const data = await response.json();
+                if (response.ok) {
+                    log(`✅ Backend conectado: ${data.message}`, 'success');
+                } else {
+                    log(`❌ Backend no responde correctamente`, 'error');
+                }
+            } catch (error) {
+                log(`💥 No se puede conectar al backend: ${error.message}`, 'error');
+            }
+
+            log('📋 Tests completados. Usa los botones para probar funcionalidades.', 'info');
+        }
+
+        window.onload = runInitialTests;
+    </script>
+</body>
+</html>

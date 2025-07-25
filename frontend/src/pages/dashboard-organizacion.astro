@@ -1,0 +1,177 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <div class="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-red-500">
+    <!-- Navigation -->
+    <nav class="bg-white/95 backdrop-blur-xl border-b border-white/20 shadow-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center">
+            <h1 class="text-xl font-bold text-purple-600">Portal de Organizaciones</h1>
+          </div>
+          <div class="flex items-center space-x-4">
+            <a href="#" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">
+              Oportunidades
+            </a>
+            <a href="#" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">
+              Voluntarios
+            </a>
+            <a href="#" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">
+              Perfil
+            </a>
+            <a href="/login-organizacion" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+              Cerrar Sesión
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-white mb-4">
+          Bienvenido a tu Dashboard
+        </h1>
+        <p class="text-white/80 text-lg">
+          Gestiona tus oportunidades de voluntariado y conecta con voluntarios
+        </p>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white/95 backdrop-blur-xl rounded-xl p-6 border border-white/20 text-center">
+          <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Oportunidades Activas</h3>
+          <div class="text-3xl font-bold text-purple-600 mt-2">12</div>
+          <p class="text-gray-500 text-sm mt-1">En curso</p>
+        </div>
+
+        <div class="bg-white/95 backdrop-blur-xl rounded-xl p-6 border border-white/20 text-center">
+          <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Voluntarios Registrados</h3>
+          <div class="text-3xl font-bold text-purple-600 mt-2">148</div>
+          <p class="text-gray-500 text-sm mt-1">Este mes</p>
+        </div>
+
+        <div class="bg-white/95 backdrop-blur-xl rounded-xl p-6 border border-white/20 text-center">
+          <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Horas de Voluntariado</h3>
+          <div class="text-3xl font-bold text-purple-600 mt-2">2,456</div>
+          <p class="text-gray-500 text-sm mt-1">Total acumuladas</p>
+        </div>
+
+        <div class="bg-white/95 backdrop-blur-xl rounded-xl p-6 border border-white/20 text-center">
+          <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Eventos Completados</h3>
+          <div class="text-3xl font-bold text-purple-600 mt-2">38</div>
+          <p class="text-gray-500 text-sm mt-1">Exitosos</p>
+        </div>
+      </div>
+
+      <!-- Content Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Oportunidades Recientes -->
+        <div class="bg-white/95 backdrop-blur-xl rounded-xl p-6 border border-white/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">Oportunidades Recientes</h2>
+            <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              + Nueva Oportunidad
+            </button>
+          </div>
+          
+          <div class="space-y-4">
+            <div class="border border-gray-200 rounded-lg p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-medium text-gray-800">Limpieza de Playa</h3>
+                  <p class="text-gray-600 text-sm mt-1">Fundación Océano Limpio</p>
+                  <p class="text-gray-500 text-xs mt-2">28 Jul 2025 • 9:00 AM</p>
+                </div>
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                  Activa
+                </span>
+              </div>
+            </div>
+
+            <div class="border border-gray-200 rounded-lg p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-medium text-gray-800">Distribución de Alimentos</h3>
+                  <p class="text-gray-600 text-sm mt-1">Banco de Alimentos</p>
+                  <p class="text-gray-500 text-xs mt-2">30 Jul 2025 • 2:00 PM</p>
+                </div>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                  Planificada
+                </span>
+              </div>
+            </div>
+
+            <div class="border border-gray-200 rounded-lg p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-medium text-gray-800">Taller de Lectura</h3>
+                  <p class="text-gray-600 text-sm mt-1">Biblioteca Municipal</p>
+                  <p class="text-gray-500 text-xs mt-2">15 Jul 2025 • 10:00 AM</p>
+                </div>
+                <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">
+                  Completada
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Voluntarios Activos -->
+        <div class="bg-white/95 backdrop-blur-xl rounded-xl p-6 border border-white/20">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-gray-800">Voluntarios Activos</h2>
+            <button class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+              Ver todos
+            </button>
+          </div>
+          
+          <div class="space-y-4">
+            <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+              <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <span class="text-purple-600 font-medium text-sm">MA</span>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-medium text-gray-800">María Rodríguez</h3>
+                <p class="text-gray-600 text-sm">15 horas completadas</p>
+              </div>
+              <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                Activa
+              </span>
+            </div>
+
+            <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+              <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <span class="text-purple-600 font-medium text-sm">CG</span>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-medium text-gray-800">Carlos González</h3>
+                <p class="text-gray-600 text-sm">22 horas completadas</p>
+              </div>
+              <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                Activa
+              </span>
+            </div>
+
+            <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+              <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <span class="text-purple-600 font-medium text-sm">AL</span>
+              </div>
+              <div class="flex-1">
+                <h3 class="font-medium text-gray-800">Ana López</h3>
+                <p class="text-gray-600 text-sm">8 horas completadas</p>
+              </div>
+              <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+                Nueva
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
