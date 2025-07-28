@@ -13,6 +13,7 @@ export interface OrganizacionRegisterData {
   telefono: string;
   sitioWeb?: string;
   descripcion: string;
+  direccion: string;
 }
 
 export interface OrganizacionApiResponse<T = any> {

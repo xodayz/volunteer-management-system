@@ -44,7 +44,46 @@ exports.registerValidation = [
     (0, express_validator_1.body)('telefono')
         .optional()
         .matches(/^[0-9+\-\s()]+$/)
-        .withMessage('Formato de teléfono inválido')
+        .withMessage('Formato de teléfono inválido'),
+    (0, express_validator_1.body)('fecha_nacimiento')
+        .isISO8601()
+        .withMessage('Debe ser una fecha válida')
+        .custom((value) => {
+            const birthDate = new Date(value);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            if (age < 18) {
+                throw new Error('Debes ser mayor de 18 años para registrarte');
+            }
+            if (age > 100) {
+                throw new Error('Edad inválida');
+            }
+            return true;
+        }),
+    (0, express_validator_1.body)('direccion')
+        .isLength({ min: 10, max: 200 })
+        .withMessage('La dirección debe tener entre 10 y 200 caracteres'),
+    (0, express_validator_1.body)('interes_habilidades')
+        .isArray({ min: 1 })
+        .withMessage('Debe seleccionar al menos un interés o habilidad')
+        .custom((value) => {
+            const validOptions = [
+                'educacion', 'salud', 'medio_ambiente', 'asistencia_social',
+                'tecnologia', 'arte_cultura', 'deportes', 'construccion',
+                'administracion', 'marketing', 'cocina', 'traduccion',
+                'cuidado_animales', 'organizacion_eventos', 'fotografia'
+            ];
+            if (!value.every(item => validOptions.includes(item))) {
+                throw new Error('Opciones de intereses inválidas');
+            }
+            return true;
+        })
 ];
 class AuthController {
     static login(req, res) {

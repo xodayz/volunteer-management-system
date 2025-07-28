@@ -89,6 +89,9 @@ class AuthService {
                     nombre: user.nombre,
                     correo: user.correo,
                     telefono: user.telefono,
+                    fecha_nacimiento: user.fecha_nacimiento,
+                    direccion: user.direccion,
+                    interes_habilidades: user.interes_habilidades,
                     rol_usuario: user.rol_usuario,
                     foto_perfil: user.foto_perfil,
                     email_verificado: user.email_verificado
@@ -113,7 +116,7 @@ class AuthService {
     static register(userData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { username, nombre, correo, password, telefono } = userData;
+                const { username, nombre, correo, password, telefono, fecha_nacimiento, direccion, interes_habilidades } = userData;
 
                 const existingUser = yield User_1.UserModel.findByEmail(correo);
                 if (existingUser) {
@@ -133,12 +136,20 @@ class AuthService {
 
                 const password_hash = yield this.hashPassword(password);
 
+                // Preparar array de intereses para PostgreSQL
+                const interesesArray = Array.isArray(interes_habilidades) 
+                    ? interes_habilidades 
+                    : JSON.parse(interes_habilidades || '[]');
+
                 const newUser = yield User_1.UserModel.create({
                     username,
                     nombre,
                     correo,
                     password_hash,
                     telefono,
+                    fecha_nacimiento,
+                    direccion,
+                    interes_habilidades: interesesArray,
                     rol_usuario: 'voluntario'
                 });
 
@@ -150,6 +161,9 @@ class AuthService {
                     nombre: newUser.nombre,
                     correo: newUser.correo,
                     telefono: newUser.telefono,
+                    fecha_nacimiento: newUser.fecha_nacimiento,
+                    direccion: newUser.direccion,
+                    interes_habilidades: newUser.interes_habilidades,
                     rol_usuario: newUser.rol_usuario
                 };
                 return {

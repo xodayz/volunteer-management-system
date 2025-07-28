@@ -13,7 +13,8 @@ class OrganizacionAuthService {
         password,
         telefono,
         sitioWeb,
-        descripcion
+        descripcion,
+        direccion
       } = organizacionData;
 
       const existingOrganizacion = await OrganizacionModel.findByEmail(correoRepresentante);
@@ -34,7 +35,8 @@ class OrganizacionAuthService {
         correoRepresentante,
         passwordHash,
         telefono,
-        sitioWeb
+        sitioWeb,
+        direccion
       });
 
       const token = jwt.sign(

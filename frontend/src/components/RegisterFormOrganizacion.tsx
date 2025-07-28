@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Mail, Lock, Building, User, Phone, Globe, FileText } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Building, User, Phone, Globe, FileText, MapPin } from 'lucide-react';
 import { OrganizacionAuthService, type OrganizacionRegisterData } from '../services/organizacionAuthService';
 
 interface OrganizacionFormData extends OrganizacionRegisterData {
@@ -18,6 +18,7 @@ export default function RegisterFormOrganizacion() {
     telefono: '',
     sitioWeb: '',
     descripcion: '',
+    direccion: '',
     password: '',
     confirmPassword: ''
   });
@@ -53,7 +54,8 @@ export default function RegisterFormOrganizacion() {
         password: formData.password,
         telefono: formData.telefono,
         sitioWeb: formData.sitioWeb,
-        descripcion: formData.descripcion
+        descripcion: formData.descripcion,
+        direccion: formData.direccion
       };
 
       const result = await OrganizacionAuthService.register(registerData);
@@ -204,6 +206,26 @@ export default function RegisterFormOrganizacion() {
                     onChange={handleChange}
                     placeholder="https://www.organizacion.com"
                     className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-colors bg-white text-gray-900 placeholder-gray-500"
+                  />
+                </div>
+              </div>
+
+              {/* Dirección */}
+              <div>
+                <label htmlFor="direccion" className="block text-sm font-medium text-gray-700 mb-2">
+                  Dirección *
+                </label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-3 text-gray-400" size={20} />
+                  <textarea
+                    id="direccion"
+                    name="direccion"
+                    value={formData.direccion}
+                    onChange={handleChange}
+                    rows={3}
+                    placeholder="Dirección completa de la organización (calle, número, ciudad, país)..."
+                    required
+                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-colors bg-white text-gray-900 placeholder-gray-500 resize-none"
                   />
                 </div>
               </div>

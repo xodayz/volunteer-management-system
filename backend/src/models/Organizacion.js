@@ -32,7 +32,8 @@ class OrganizacionModel {
         correoRepresentante,
         passwordHash,
         telefono,
-        sitioWeb
+        sitioWeb,
+        direccion
       } = organizacionData;
 
       const query = `
@@ -43,9 +44,10 @@ class OrganizacionModel {
           correo_representante, 
           password_hash, 
           telefono_representante, 
-          sitio_web
+          sitio_web,
+          direccion
         ) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
         RETURNING *
       `;
 
@@ -56,7 +58,8 @@ class OrganizacionModel {
         correoRepresentante,
         passwordHash,
         telefono,
-        sitioWeb || null
+        sitioWeb || null,
+        direccion
       ];
 
       const result = await pool.query(query, values);
