@@ -79,12 +79,17 @@ npm run dev
 
 **Variables de entorno críticas (.env):**
 ```env
+# Base de datos PostgreSQL
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=sistema_voluntariado
 DB_USER=postgres
-DB_PASSWORD=tu_password
-JWT_SECRET=secreto_muy_largo_y_seguro
+DB_PASSWORD=Vol@12345
+
+# JWT para autenticación
+JWT_SECRET=tu_jwt_secret_super_seguro_aqui
+
+# Puerto del servidor
 PORT=3001
 ```
 
