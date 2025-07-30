@@ -22,7 +22,6 @@ export default function RegisterForm() {
     interes_habilidades: []
   });
 
-  // Efecto para cerrar dropdown al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -54,7 +53,6 @@ export default function RegisterForm() {
     setError('');
     setSuccess('');
 
-    // Validaciones del frontend
     if (formData.password !== confirmPassword) {
       setError('Las contraseñas no coinciden');
       setIsLoading(false);
@@ -110,10 +108,8 @@ export default function RegisterForm() {
     let newIntereses;
     
     if (currentIntereses.includes(interes)) {
-      // Remover si ya está seleccionado
       newIntereses = currentIntereses.filter(item => item !== interes);
     } else {
-      // Agregar si no está seleccionado
       newIntereses = [...currentIntereses, interes];
     }
     

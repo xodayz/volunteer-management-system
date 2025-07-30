@@ -1,4 +1,4 @@
-const pool = require('../config/database').default;
+const pool = require('../config/database');
 
 class OrganizacionModel {
   static async findByEmail(email) {

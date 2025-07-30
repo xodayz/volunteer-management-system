@@ -13,7 +13,7 @@ import Layout from '../layouts/Layout.astro';
           </div>
           <div class="flex items-center space-x-4">
             <a href="#" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">
-              Oportunidades
+              Eventos
             </a>
             <a href="#" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">
               Voluntarios
@@ -37,141 +37,848 @@ import Layout from '../layouts/Layout.astro';
           Bienvenido a tu Dashboard
         </h1>
         <p class="text-white/80 text-lg">
-          Gestiona tus oportunidades de voluntariado y conecta con voluntarios
+          Gestiona tus eventos de voluntariado y conecta con voluntarios
         </p>
       </div>
 
       <!-- Stats Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div class="bg-white/95 backdrop-blur-xl rounded-xl p-6 border border-white/20 text-center">
-          <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Oportunidades Activas</h3>
-          <div class="text-3xl font-bold text-purple-600 mt-2">12</div>
+          <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Eventos Activos</h3>
+          <div class="text-3xl font-bold text-purple-600 mt-2" id="eventos-activos">-</div>
           <p class="text-gray-500 text-sm mt-1">En curso</p>
         </div>
 
         <div class="bg-white/95 backdrop-blur-xl rounded-xl p-6 border border-white/20 text-center">
           <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Voluntarios Registrados</h3>
-          <div class="text-3xl font-bold text-purple-600 mt-2">148</div>
+          <div class="text-3xl font-bold text-purple-600 mt-2" id="voluntarios-registrados">-</div>
           <p class="text-gray-500 text-sm mt-1">Este mes</p>
         </div>
 
         <div class="bg-white/95 backdrop-blur-xl rounded-xl p-6 border border-white/20 text-center">
           <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Horas de Voluntariado</h3>
-          <div class="text-3xl font-bold text-purple-600 mt-2">2,456</div>
+          <div class="text-3xl font-bold text-purple-600 mt-2" id="horas-voluntariado">-</div>
           <p class="text-gray-500 text-sm mt-1">Total acumuladas</p>
         </div>
 
         <div class="bg-white/95 backdrop-blur-xl rounded-xl p-6 border border-white/20 text-center">
           <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Eventos Completados</h3>
-          <div class="text-3xl font-bold text-purple-600 mt-2">38</div>
+          <div class="text-3xl font-bold text-purple-600 mt-2" id="eventos-completados">-</div>
           <p class="text-gray-500 text-sm mt-1">Exitosos</p>
         </div>
       </div>
 
       <!-- Content Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Oportunidades Recientes -->
+      <div class="grid grid-cols-1 gap-8">
+        <!-- Eventos -->
         <div class="bg-white/95 backdrop-blur-xl rounded-xl p-6 border border-white/20">
           <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-semibold text-gray-800">Oportunidades Recientes</h2>
-            <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-              + Nueva Oportunidad
+            <h2 class="text-xl font-semibold text-gray-800">Eventos</h2>
+            <button 
+              id="nuevo-evento-btn"
+              class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Nuevo Evento
             </button>
           </div>
           
-          <div class="space-y-4">
-            <div class="border border-gray-200 rounded-lg p-4">
-              <div class="flex justify-between items-start">
-                <div>
-                  <h3 class="font-medium text-gray-800">Limpieza de Playa</h3>
-                  <p class="text-gray-600 text-sm mt-1">Fundación Océano Limpio</p>
-                  <p class="text-gray-500 text-xs mt-2">28 Jul 2025 • 9:00 AM</p>
-                </div>
-                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
-                  Activa
-                </span>
+          <div id="eventos-container">
+            <!-- Estado de carga inicial -->
+            <div id="loading-state" class="text-center py-12">
+              <div class="animate-pulse">
+                <div class="w-12 h-12 bg-purple-200 rounded-full mx-auto mb-4 animate-bounce"></div>
+                <div class="h-4 bg-purple-200 rounded w-48 mx-auto mb-2"></div>
+                <div class="h-3 bg-purple-200 rounded w-32 mx-auto"></div>
               </div>
-            </div>
-
-            <div class="border border-gray-200 rounded-lg p-4">
-              <div class="flex justify-between items-start">
-                <div>
-                  <h3 class="font-medium text-gray-800">Distribución de Alimentos</h3>
-                  <p class="text-gray-600 text-sm mt-1">Banco de Alimentos</p>
-                  <p class="text-gray-500 text-xs mt-2">30 Jul 2025 • 2:00 PM</p>
-                </div>
-                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-                  Planificada
-                </span>
-              </div>
-            </div>
-
-            <div class="border border-gray-200 rounded-lg p-4">
-              <div class="flex justify-between items-start">
-                <div>
-                  <h3 class="font-medium text-gray-800">Taller de Lectura</h3>
-                  <p class="text-gray-600 text-sm mt-1">Biblioteca Municipal</p>
-                  <p class="text-gray-500 text-xs mt-2">15 Jul 2025 • 10:00 AM</p>
-                </div>
-                <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">
-                  Completada
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Voluntarios Activos -->
-        <div class="bg-white/95 backdrop-blur-xl rounded-xl p-6 border border-white/20">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-semibold text-gray-800">Voluntarios Activos</h2>
-            <button class="text-purple-600 hover:text-purple-700 text-sm font-medium">
-              Ver todos
-            </button>
-          </div>
-          
-          <div class="space-y-4">
-            <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
-              <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <span class="text-purple-600 font-medium text-sm">MA</span>
-              </div>
-              <div class="flex-1">
-                <h3 class="font-medium text-gray-800">María Rodríguez</h3>
-                <p class="text-gray-600 text-sm">15 horas completadas</p>
-              </div>
-              <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
-                Activa
-              </span>
-            </div>
-
-            <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
-              <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <span class="text-purple-600 font-medium text-sm">CG</span>
-              </div>
-              <div class="flex-1">
-                <h3 class="font-medium text-gray-800">Carlos González</h3>
-                <p class="text-gray-600 text-sm">22 horas completadas</p>
-              </div>
-              <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
-                Activa
-              </span>
-            </div>
-
-            <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
-              <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <span class="text-purple-600 font-medium text-sm">AL</span>
-              </div>
-              <div class="flex-1">
-                <h3 class="font-medium text-gray-800">Ana López</h3>
-                <p class="text-gray-600 text-sm">8 horas completadas</p>
-              </div>
-              <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
-                Nueva
-              </span>
+              <p class="text-purple-600 mt-4 font-medium">Cargando eventos...</p>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Modal para crear evento -->
+    <div id="event-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center p-6 border-b border-gray-200">
+          <h2 class="text-xl font-semibold text-gray-800">Crear Nuevo Evento</h2>
+          <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <form id="event-form" class="p-6 space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Título del Evento</label>
+              <input type="text" name="titulo" required 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
+              <select name="categoria_id" required 
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <option value="">Seleccionar categoría</option>
+                <option value="1">Educación</option>
+                <option value="2">Salud</option>
+                <option value="3">Medio Ambiente</option>
+                <option value="4">Ayuda Social</option>
+                <option value="5">Cultura y Arte</option>
+                <option value="6">Deportes</option>
+                <option value="7">Tecnología</option>
+                <option value="8">Emergencias</option>
+              </select>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+            <textarea name="descripcion" rows="3" required
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Inicio</label>
+              <input type="date" name="fecha_inicio" required 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Hora de Inicio</label>
+              <input type="time" name="hora_inicio" required 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Fin</label>
+              <input type="date" name="fecha_fin" required 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Hora de Fin</label>
+              <input type="time" name="hora_fin" required 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Dirección</label>
+              <input type="text" name="direccion" required 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Capacidad Máxima</label>
+              <input type="number" name="capacidad_maxima" min="1" required 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Requisitos (opcional)</label>
+            <textarea name="requisitos" rows="2" placeholder="Separar cada requisito con una coma"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+          </div>
+          
+          <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+            <button type="button" onclick="closeEventModal()" 
+                    class="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+              Cancelar
+            </button>
+            <button type="submit" 
+                    class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
+              Crear Evento
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
+
+  <!-- Scripts -->
+  <script type="module">
+    const API_BASE_URL = 'http://localhost:3001/api';
+    
+    const EventoService = {
+      getAuthHeaders() {
+        const token = localStorage.getItem('organizacionAuthToken');
+        console.log('🔑 Token obtenido de localStorage:', token ? 'PRESENTE' : 'AUSENTE');
+        return {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        };
+      },
+
+      async getEventos() {
+        try {
+          console.log('📋 EventoService.getEventos() iniciado...');
+          
+          const headers = this.getAuthHeaders();
+          console.log('📋 Headers preparados:', headers);
+          
+          const url = `${API_BASE_URL}/eventos`;
+          console.log('📋 URL a llamar:', url);
+          
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: headers,
+          });
+
+          console.log('📋 Respuesta recibida:', response.status, response.statusText);
+          
+          const data = await response.json();
+          
+          console.log('📦 Datos parseados:', data);
+          
+          if (!response.ok) {
+            throw new Error(data.message || 'Error obteniendo eventos');
+          }
+
+          return data;
+        } catch (error) {
+          console.error('❌ Error en EventoService.getEventos():', error);
+          return {
+            success: false,
+            message: error instanceof Error ? error.message : 'Error de conexión con el servidor'
+          };
+        }
+      },
+
+      async createEvento(eventoData) {
+        try {
+          console.log('🎯 EventoService.createEvento() iniciado con datos:', eventoData);
+          
+          const headers = this.getAuthHeaders();
+          console.log('🎯 Headers preparados:', headers);
+          
+          const url = `${API_BASE_URL}/eventos`;
+          console.log('🎯 URL a llamar:', url);
+          
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(eventoData)
+          });
+
+          console.log('🎯 Respuesta recibida:', response.status, response.statusText);
+          
+          const data = await response.json();
+          
+          console.log('📦 Datos de respuesta:', data);
+          
+          if (!response.ok) {
+            throw new Error(data.message || 'Error creando evento');
+          }
+
+          return data;
+        } catch (error) {
+          console.error('❌ Error en EventoService.createEvento():', error);
+          return {
+            success: false,
+            message: error instanceof Error ? error.message : 'Error de conexión con el servidor'
+          };
+        }
+      }
+    };
+
+    window.addEventListener('error', (event) => {
+      console.error('🚨 Error JavaScript detectado:', {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error: event.error
+      });
+    });
+
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('🚨 Promise rejection no manejada:', event.reason);
+    });
+
+    let events = [];
+    let isModalOpen = false;
+    let isLoading = false;
+    let loadingTimeout = null;
+
+    function getAuthToken() {
+      return localStorage.getItem('organizacionAuthToken');
+    }
+
+    function checkAuth() {
+      console.log('🔍 Iniciando verificación de autenticación...');
+      
+      const token = getAuthToken();
+      console.log('🔑 Token encontrado:', token ? 'SÍ' : 'NO');
+      console.log('🔑 Longitud del token:', token ? token.length : 0);
+      
+      if (!token) {
+        console.log('❌ No se encontró token de organización, redirigiendo al login...');
+        window.location.href = '/login-organizacion';
+        return false;
+      }
+      
+      console.log('✅ Token presente, continuando...');
+      return true;
+    }
+
+    function showLoadingState() {
+      const container = document.getElementById('eventos-container');
+      if (container) {
+        container.innerHTML = `
+          <div id="loading-state" class="text-center py-12">
+            <div class="animate-pulse">
+              <div class="w-12 h-12 bg-purple-200 rounded-full mx-auto mb-4 animate-bounce"></div>
+              <div class="h-4 bg-purple-200 rounded w-48 mx-auto mb-2"></div>
+              <div class="h-3 bg-purple-200 rounded w-32 mx-auto"></div>
+            </div>
+            <p class="text-purple-600 mt-4 font-medium">Cargando eventos...</p>
+          </div>
+        `;
+      }
+
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+      }
+      
+      loadingTimeout = setTimeout(() => {
+        if (isLoading) {
+          showTimeoutMessage();
+        }
+      }, 15000);
+    }
+
+    function showTimeoutMessage() {
+      const container = document.getElementById('eventos-container');
+      if (container) {
+        container.innerHTML = `
+          <div class="text-center py-12">
+            <svg class="mx-auto text-orange-500 mb-4 w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            <h3 class="text-xl font-semibold text-orange-600 mb-2">Módulo a la espera de información</h3>
+            <p class="text-orange-500 mb-4">La carga está tomando más tiempo del esperado</p>
+            <p class="text-gray-600 text-sm mb-6">Comuníquese con el administrador si el problema persiste</p>
+            <button onclick="loadEvents()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors">
+              Reintentar
+            </button>
+          </div>
+        `;
+      }
+      isLoading = false;
+    }
+
+    function showNoEventsMessage() {
+      const container = document.getElementById('eventos-container');
+      if (container) {
+        container.innerHTML = `
+          <div class="text-center py-12">
+            <svg class="mx-auto text-gray-400 mb-4 w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 1v2m0 0V8m0 2.5-4-4m4 4 4-4"></path>
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">Aún no se han creado eventos</h3>
+            <p class="text-gray-500 mb-6">Comienza creando tu primer evento para gestionar voluntarios</p>
+            <button onclick="openEventModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors flex items-center mx-auto">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Crear Primer Evento
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    async function loadEvents() {
+      if (isLoading) {
+        console.log('⏳ Ya hay una carga de eventos en progreso, saltando...');
+        return;
+      }
+      
+      isLoading = true;
+      showLoadingState();
+      
+      const btnNuevoEvento = document.getElementById('nuevo-evento-btn');
+      if (btnNuevoEvento) {
+        btnNuevoEvento.disabled = true;
+      }
+
+      try {
+        console.log('📋 Cargando eventos desde el backend...');
+        console.log('🔑 Token actual:', localStorage.getItem('organizacionAuthToken') ? 'PRESENTE' : 'AUSENTE');
+        
+        console.log('🔧 EventoService disponible:', typeof EventoService !== 'undefined');
+        console.log('🔧 getEventos method disponible:', typeof EventoService?.getEventos === 'function');
+        
+        const response = await EventoService.getEventos();
+        
+        console.log('📦 Respuesta completa del EventoService.getEventos():', response);
+        
+        if (response.success && response.data) {
+          events = response.data.eventos || [];
+          console.log(`✅ ${events.length} eventos cargados exitosamente`);
+          console.log('📋 Eventos:', events);
+        } else {
+          console.log('❌ Respuesta no exitosa:', response);
+          throw new Error(response.message || 'Error desconocido al cargar eventos');
+        }
+
+        if (loadingTimeout) {
+          clearTimeout(loadingTimeout);
+          loadingTimeout = null;
+        }
+
+        console.log('🎨 Renderizando eventos...');
+        renderEvents();
+        updateStats();
+
+      } catch (error) {
+        console.error('❌ Error completo al cargar eventos:', error);
+        console.error('❌ Stack trace:', error.stack);
+        
+        if (loadingTimeout) {
+          clearTimeout(loadingTimeout);
+          loadingTimeout = null;
+        }
+        
+        showError(`Error de conexión con el servidor: ${error.message}`);
+      } finally {
+        isLoading = false;
+        
+        if (btnNuevoEvento) {
+          btnNuevoEvento.disabled = false;
+        }
+        
+        console.log('🏁 Función loadEvents terminada, isLoading =', isLoading);
+      }
+    }
+
+    function renderEvents() {
+      const container = document.getElementById('eventos-container');
+      if (!container) return;
+
+      if (events.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12">
+            <svg class="mx-auto text-gray-400 mb-4 w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 1v2m0 0V8m0 2.5-4-4m4 4 4-4"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-600 mb-2">No hay eventos creados</h3>
+            <p class="text-gray-500">Crea tu primer evento haciendo clic en "Nuevo Evento"</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="space-y-4">
+            ${events.map(event => createEventCard(event)).join('')}
+          </div>
+        `;
+      }
+    }
+
+    function createEventCard(event) {
+      const status = getEventStatus(event.fechaInicio, event.fechaFin);
+      const statusClass = getStatusClass(status.color);
+      
+      return `
+        <div class="border border-gray-200 rounded-lg p-6 bg-white hover:shadow-md transition-shadow">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex-1">
+              <div class="flex items-center justify-between mb-2">
+                <h3 class="text-lg font-semibold text-gray-800">${event.titulo}</h3>
+                <span class="${statusClass}">${status.status}</span>
+              </div>
+              
+              ${event.categoria_nombre ? `
+                <div class="flex items-center text-purple-600 text-sm mb-2">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                  </svg>
+                  ${event.categoria_nombre}
+                </div>
+              ` : ''}
+              
+              <p class="text-gray-600 text-sm mb-3">${event.descripcion}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+            <div class="flex items-center text-gray-600">
+              <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 1v2m0 0V8m0 2.5-4-4m4 4 4-4"></path>
+              </svg>
+              <div>
+                <div class="font-medium">Inicio</div>
+                <div>${formatDate(event.fechaInicio)}</div>
+                <div class="text-xs">${formatTime(event.horaInicio)}</div>
+              </div>
+            </div>
+
+            <div class="flex items-center text-gray-600">
+              <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <div>
+                <div class="font-medium">Fin</div>
+                <div>${formatDate(event.fechaFin)}</div>
+                <div class="text-xs">${formatTime(event.horaFin)}</div>
+              </div>
+            </div>
+
+            <div class="flex items-center text-gray-600">
+              <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <div>
+                <div class="font-medium">Ubicación</div>
+                <div class="text-xs">${event.ubicacion || 'No especificada'}</div>
+              </div>
+            </div>
+
+            <div class="flex items-center text-gray-600">
+              <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+              </svg>
+              <div>
+                <div class="font-medium">Participantes</div>
+                <div>${event.participantesRegistrados || 0} / ${event.capacidadMaxima || 'Ilimitado'}</div>
+                <div class="text-xs">${event.capacidadMaxima ? (event.capacidadMaxima - (event.participantesRegistrados || 0)) + ' disponibles' : 'Sin límite'}</div>
+              </div>
+            </div>
+          </div>
+
+          ${event.requisitos && event.requisitos.length > 0 ? `
+            <div class="mt-4 pt-4 border-t border-gray-100">
+              <div class="text-sm text-gray-600 mb-2">
+                <strong>Requisitos:</strong>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                ${(() => {
+                  try {
+                    let requisitosArray = [];
+                    if (typeof event.requisitos === 'string') {
+                      let cleanRequisitos = event.requisitos
+                        .replace(/^\{+/, '')
+                        .replace(/\}+$/, '')
+                        .replace(/["']/g, '')
+                        .trim();
+                      
+                      if (cleanRequisitos.includes(',')) {
+                        requisitosArray = cleanRequisitos.split(',').map(r => r.trim());
+                      } else if (cleanRequisitos) {
+                        requisitosArray = [cleanRequisitos];
+                      }
+                    } else if (Array.isArray(event.requisitos)) {
+                      requisitosArray = event.requisitos;
+                    } else if (event.requisitos) {
+                      requisitosArray = [String(event.requisitos)];
+                    }
+                    
+                    return requisitosArray
+                      .filter(req => req && req.trim() !== '')
+                      .map(req => `
+                        <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs">${req.trim()}</span>
+                      `).join('');
+                  } catch (e) {
+                    console.error('Error procesando requisitos:', e);
+                    return `<span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">${event.requisitos}</span>`;
+                  }
+                })()}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function getEventStatus(fechaInicio, fechaFin) {
+      const now = new Date();
+      const start = new Date(fechaInicio);
+      const end = new Date(fechaFin);
+
+      if (now < start) {
+        return { status: 'Próximo', color: 'blue' };
+      } else if (now >= start && now <= end) {
+        return { status: 'En Curso', color: 'green' };
+      } else {
+        return { status: 'Finalizado', color: 'gray' };
+      }
+    }
+
+    function getStatusClass(color) {
+      const classes = {
+        blue: 'bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium',
+        green: 'bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium',
+        gray: 'bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium'
+      };
+      return classes[color] || classes.gray;
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+
+    function formatTime(timeString) {
+      if (!timeString) {
+        return 'Hora no especificada';
+      }
+      
+      if (timeString.includes('T')) {
+        const date = new Date(timeString);
+        return date.toLocaleTimeString('es-ES', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+      
+      if (timeString.includes(':')) {
+        const [hours, minutes] = timeString.split(':');
+        const date = new Date();
+        date.setHours(parseInt(hours), parseInt(minutes));
+        return date.toLocaleTimeString('es-ES', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+      
+      return timeString;
+    }
+
+    function updateStats() {
+      const now = new Date();
+      
+      const eventosActivos = events.filter(event => {
+        const start = new Date(event.fechaInicio);
+        const end = new Date(event.fechaFin);
+        return now >= start && now <= end;
+      }).length;
+
+      const eventosCompletados = events.filter(event => {
+        const end = new Date(event.fechaFin);
+        return now > end;
+      }).length;
+
+      const totalVoluntarios = events.reduce((sum, event) => sum + (event.participantesRegistrados || 0), 0);
+
+      const eventosActivosEl = document.getElementById('eventos-activos');
+      const eventosCompletadosEl = document.getElementById('eventos-completados');
+      const voluntariosRegistradosEl = document.getElementById('voluntarios-registrados');
+      const horasVoluntariadoEl = document.getElementById('horas-voluntariado');
+
+      if (eventosActivosEl) eventosActivosEl.textContent = eventosActivos.toString();
+      if (eventosCompletadosEl) eventosCompletadosEl.textContent = eventosCompletados.toString();
+      if (voluntariosRegistradosEl) voluntariosRegistradosEl.textContent = totalVoluntarios.toString();
+      if (horasVoluntariadoEl) horasVoluntariadoEl.textContent = (totalVoluntarios * 4).toString();
+    }
+
+    function showError(message) {
+      const container = document.getElementById('eventos-container');
+      if (container) {
+        container.innerHTML = `
+          <div class="text-center py-12">
+            <svg class="mx-auto text-red-400 mb-4 w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-red-600 mb-2">Error</h3>
+            <p class="text-red-500">${message}</p>
+            <button onclick="loadEvents()" class="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              Reintentar
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    async function createEvent(eventData) {
+      console.log('🎯 Iniciando creación de evento:', eventData);
+      
+      if (!checkAuth()) return;
+      
+      try {
+        const fechaInicio = `${eventData.fecha_inicio}T${eventData.hora_inicio}:00`;
+        const fechaFin = `${eventData.fecha_fin}T${eventData.hora_fin}:00`;
+        
+        const dataParaEnviar = {
+          titulo: eventData.titulo,
+          descripcion: eventData.descripcion,
+          fechaInicio,
+          fechaFin,
+          ubicacion: eventData.direccion,
+          tipoEvento: 'voluntariado',
+          capacidadMaxima: parseInt(eventData.capacidad_maxima) || null,
+          requisitos: eventData.requisitos || '',
+          categoria_id: eventData.categoria_id || 1
+        };
+        
+        console.log('📤 Datos a enviar:', dataParaEnviar);
+        
+        const response = await EventoService.createEvento(dataParaEnviar);
+        
+        if (response.success) {
+          console.log('✅ Evento creado exitosamente');
+          
+          closeEventModal();
+          
+          const form = document.getElementById('event-form');
+          if (form) form.reset();
+          
+          await loadEvents();
+          
+          showSuccessMessage('¡Evento creado exitosamente!');
+        } else {
+          throw new Error(response.message || 'Error desconocido al crear evento');
+        }
+      } catch (error) {
+        console.error('❌ Error creando evento:', error);
+        showErrorMessage(`Error al crear evento: ${error.message}`);
+      }
+    }
+
+    function showSuccessMessage(message) {
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 3000);
+    }
+
+    function showErrorMessage(message) {
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 3000);
+    }
+
+    function openEventModal() {
+      if (isLoading) return;
+      
+      isModalOpen = true;
+      const modal = document.getElementById('event-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeEventModal() {
+      isModalOpen = false;
+      const modal = document.getElementById('event-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+      
+      const form = document.getElementById('event-form');
+      if (form) {
+        form.reset();
+      }
+    }
+
+    function editEvent(eventId) {
+      console.log('Editar evento:', eventId);
+    }
+
+    function deleteEvent(eventId) {
+      if (confirm('¿Estás seguro de que quieres eliminar este evento?')) {
+        console.log('Eliminar evento:', eventId);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🚀 Dashboard de organización cargando...');
+      console.log('📊 LocalStorage actual:', {
+        organizacionAuthToken: localStorage.getItem('organizacionAuthToken') ? 'Presente' : 'Ausente',
+        organizacion: localStorage.getItem('organizacion') ? 'Presente' : 'Ausente',
+        token: localStorage.getItem('token') ? 'Presente' : 'Ausente'
+      });
+      
+      console.log('🔒 Verificando autenticación...');
+      if (!checkAuth()) {
+        console.log('❌ Autenticación falló, deteniendo carga del dashboard');
+        return;
+      }
+
+      console.log('✅ Autenticación exitosa, continuando con la carga...');
+
+      console.log('📅 Iniciando carga de eventos...');
+      loadEvents();
+
+      const nuevoEventoBtn = document.getElementById('nuevo-evento-btn');
+      if (nuevoEventoBtn) {
+        console.log('🔘 Configurando botón de nuevo evento...');
+        nuevoEventoBtn.addEventListener('click', () => {
+          console.log('🔘 Click en nuevo evento');
+          openEventModal();
+        });
+      } else {
+        console.log('⚠️ No se encontró el botón de nuevo evento');
+      }
+
+      const modal = document.getElementById('event-modal');
+      if (modal) {
+        console.log('🔘 Configurando modal de eventos...');
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            closeEventModal();
+          }
+        });
+      }
+
+      const closeBtn = document.getElementById('close-modal-btn');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', closeEventModal);
+      }
+
+      const eventForm = document.getElementById('event-form');
+      if (eventForm) {
+        eventForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const formData = new FormData(eventForm);
+          const eventData = {
+            titulo: formData.get('titulo'),
+            descripcion: formData.get('descripcion'),
+            categoria_id: parseInt(formData.get('categoria_id')),
+            fecha_inicio: formData.get('fecha_inicio'),
+            hora_inicio: formData.get('hora_inicio'),
+            fecha_fin: formData.get('fecha_fin'),
+            hora_fin: formData.get('hora_fin'),
+            direccion: formData.get('direccion'),
+            capacidad_maxima: parseInt(formData.get('capacidad_maxima')),
+            requisitos: formData.get('requisitos') ? formData.get('requisitos').split(',').map(req => req.trim()) : []
+          };
+          
+          await createEvent(eventData);
+        });
+      }
+      
+      console.log('🎉 Dashboard completamente cargado');
+    });
+
+    window.loadEvents = loadEvents;
+    window.createEvent = createEvent;
+    window.openEventModal = openEventModal;
+    window.closeEventModal = closeEventModal;
+    window.editEvent = editEvent;
+    window.deleteEvent = deleteEvent;
+  </script>
 </Layout>

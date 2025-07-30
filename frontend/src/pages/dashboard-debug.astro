@@ -1,0 +1,285 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <div class="min-h-screen bg-gray-50 p-8">
+    <h1 id="dashboard-title" class="text-3xl font-bold text-gray-800 mb-8">Dashboard Organizaciones - DEBUG</h1>
+    
+    <div id="auth-status" class="bg-white p-6 rounded-lg shadow mb-6">
+      <h2 class="text-xl font-semibold mb-4">Estado de Autenticación</h2>
+      <div id="auth-info">Verificando...</div>
+    </div>
+    
+    <div id="debug-info" class="bg-blue-50 p-6 rounded-lg shadow mb-6">
+      <h2 class="text-xl font-semibold mb-4">Información de Debug</h2>
+      <div id="debug-content">Cargando...</div>
+    </div>
+    
+    <div id="events-section" class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-xl font-semibold mb-4">Test de Login</h2>
+      <div id="events-content">
+        <p class="text-gray-600">Prueba el login directamente desde aquí:</p>
+        <div class="mt-4 space-y-4">
+          <div class="flex gap-4">
+            <button id="test-login-btn" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+              🔑 Test Login Directo
+            </button>
+            <button id="test-button" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+              Test JS
+            </button>
+          </div>
+          <div class="flex gap-4">
+            <button onclick="window.mostrarStorage()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+              Mostrar Storage
+            </button>
+            <button onclick="window.limpiarStorage()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+              Limpiar Storage
+            </button>
+            <button onclick="window.irALogin()" class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">
+              Ir a Login
+            </button>
+          </div>
+        </div>
+        <div id="login-result" class="mt-4 p-4 bg-gray-50 rounded hidden">
+          <h3 class="font-semibold mb-2">Resultado del Login:</h3>
+          <div id="login-details"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    console.log('🚀 Dashboard DEBUG iniciando...');
+    
+    // Test básico para verificar que el script se ejecuta
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('� DOM cargado');
+      
+      // Actualizar estado inmediatamente
+      const authInfo = document.getElementById('auth-info');
+      const debugContent = document.getElementById('debug-content');
+      
+      if (authInfo) {
+        authInfo.innerHTML = '<div class="text-blue-600">JavaScript ejecutándose...</div>';
+      }
+      
+      if (debugContent) {
+        debugContent.innerHTML = '<div class="text-blue-600">Verificando localStorage...</div>';
+      }
+      
+      // Verificar localStorage
+      setTimeout(function() {
+        console.log('🔍 Verificando auth...');
+        
+        const token = localStorage.getItem('organizacionAuthToken');
+        const organizacion = localStorage.getItem('organizacion');
+        
+        console.log('Token encontrado:', token ? 'SÍ' : 'NO');
+        console.log('Organización encontrada:', organizacion ? 'SÍ' : 'NO');
+        
+        if (authInfo) {
+          let authStatus = '';
+          if (token && organizacion) {
+            try {
+              const orgData = JSON.parse(organizacion);
+              authStatus = `
+                <div class="text-green-600">
+                  <div class="font-semibold">✅ Autenticación EXITOSA</div>
+                  <div class="mt-2 text-sm">
+                    <div><strong>Email:</strong> ${orgData.correo || 'N/A'}</div>
+                    <div><strong>Organización:</strong> ${orgData.nombre || 'N/A'}</div>
+                    <div><strong>Token presente:</strong> SÍ</div>
+                  </div>
+                </div>
+              `;
+            } catch (e) {
+              authStatus = `
+                <div class="text-red-600">
+                  <div class="font-semibold">❌ Error parseando datos</div>
+                  <div class="text-sm">Error: ${e.message}</div>
+                </div>
+              `;
+            }
+          } else {
+            const missing = [];
+            if (!token) missing.push('token');
+            if (!organizacion) missing.push('organizacion');
+            
+            authStatus = `
+              <div class="text-red-600">
+                <div class="font-semibold">❌ Autenticación FALLÓ</div>
+                <div class="text-sm">Faltan: ${missing.join(', ')}</div>
+              </div>
+            `;
+          }
+          
+          authInfo.innerHTML = authStatus;
+        }
+        
+        if (debugContent) {
+          debugContent.innerHTML = `
+            <div class="space-y-2 text-sm">
+              <div><strong>localStorage.length:</strong> ${localStorage.length}</div>
+              <div><strong>organizacionAuthToken:</strong> ${token ? 'Presente' : 'Ausente'}</div>
+              <div><strong>organizacion:</strong> ${organizacion ? 'Presente' : 'Ausente'}</div>
+              <div><strong>Hora actual:</strong> ${new Date().toLocaleTimeString()}</div>
+            </div>
+          `;
+        }
+        
+        console.log('✅ Verificación completada');
+      }, 500);
+      
+      // Configurar botón de prueba
+      const testButton = document.getElementById('test-button');
+      if (testButton) {
+        console.log('🔘 Configurando botón de prueba...');
+        testButton.addEventListener('click', function() {
+          console.log('🔘 Botón clickeado!');
+          alert('¡Botón funciona correctamente!');
+        });
+        testButton.style.backgroundColor = '#10b981';
+        testButton.innerHTML = 'Botón Configurado ✅';
+      } else {
+        console.log('❌ No se encontró el botón de prueba');
+      }
+      
+      // Configurar botón de test login
+      const testLoginBtn = document.getElementById('test-login-btn');
+      if (testLoginBtn) {
+        console.log('🔑 Configurando botón de test login...');
+        testLoginBtn.addEventListener('click', async function() {
+          console.log('🔑 Iniciando test de login...');
+          await testLogin();
+        });
+      }
+      
+      console.log('🎉 Configuración completa');
+    });
+    
+    // Función para test de login directo
+    async function testLogin() {
+      const loginResultDiv = document.getElementById('login-result');
+      const loginDetailsDiv = document.getElementById('login-details');
+      
+      if (loginResultDiv) {
+        loginResultDiv.classList.remove('hidden');
+      }
+      
+      if (loginDetailsDiv) {
+        loginDetailsDiv.innerHTML = '🔄 Realizando login...';
+      }
+      
+      try {
+        console.log('🌐 Haciendo petición de login...');
+        
+        const response = await fetch('http://localhost:3001/api/organizacion/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: 'psuarez@fudintec.com.do',
+            password: 'Caja@12345'
+          }),
+        });
+
+        console.log('📡 Respuesta recibida, status:', response.status);
+        const data = await response.json();
+        console.log('📦 Datos parseados:', data);
+        
+        if (loginDetailsDiv) {
+          const token = data.token || data.data?.token;
+          const organizacion = data.data?.organizacion || data.organizacion;
+          
+          loginDetailsDiv.innerHTML = `
+            <div class="space-y-2 text-sm">
+              <div><strong>Status:</strong> ${response.status}</div>
+              <div><strong>Success:</strong> ${data.success ? '✅' : '❌'}</div>
+              <div><strong>Message:</strong> ${data.message || 'N/A'}</div>
+              <div><strong>Token presente:</strong> ${token ? '✅' : '❌'}</div>
+              <div><strong>Token ubicación:</strong> ${data.token ? 'data.token' : data.data?.token ? 'data.data.token' : 'no encontrado'}</div>
+              <div><strong>Organización presente:</strong> ${organizacion ? '✅' : '❌'}</div>
+              <div><strong>Respuesta completa:</strong></div>
+              <pre class="bg-gray-100 p-2 rounded text-xs overflow-auto">${JSON.stringify(data, null, 2)}</pre>
+            </div>
+          `;
+        }
+        
+        const token = data.token || data.data?.token;
+        const organizacion = data.data?.organizacion || data.organizacion;
+        
+        if (data.success && token) {
+          console.log('✅ Login exitoso! Guardando en localStorage...');
+          
+          // Intentar guardar en localStorage
+          try {
+            localStorage.setItem('organizacionAuthToken', token);
+            console.log('💾 Token guardado');
+            
+            if (organizacion) {
+              localStorage.setItem('organizacion', JSON.stringify(organizacion));
+              console.log('💾 Organización guardada');
+            }
+            
+            // Verificar que se guardó
+            const savedToken = localStorage.getItem('organizacionAuthToken');
+            const savedOrg = localStorage.getItem('organizacion');
+            
+            console.log('🔍 Verificación post-guardado:');
+            console.log('  Token guardado:', savedToken ? 'SÍ' : 'NO');
+            console.log('  Organización guardada:', savedOrg ? 'SÍ' : 'NO');
+            
+            // Actualizar la interfaz
+            setTimeout(function() {
+              location.reload();
+            }, 2000);
+            
+          } catch (saveError) {
+            console.error('❌ Error guardando en localStorage:', saveError);
+            if (loginDetailsDiv) {
+              loginDetailsDiv.innerHTML += `<div class="text-red-600 mt-2">Error guardando: ${saveError}</div>`;
+            }
+          }
+        } else {
+          console.log('❌ Login falló:', data.message);
+        }
+        
+      } catch (error) {
+        console.error('❌ Error en test login:', error);
+        if (loginDetailsDiv) {
+          loginDetailsDiv.innerHTML = `<div class="text-red-600">Error: ${error}</div>`;
+        }
+      }
+    }
+    
+    // Función simple para limpiar localStorage
+    function limpiarStorage() {
+      localStorage.clear();
+      location.reload();
+    }
+    
+    // Función para mostrar contenido de localStorage
+    function mostrarStorage() {
+      console.log('📱 Contenido completo del localStorage:');
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        const value = localStorage.getItem(key);
+        console.log(`  ${key}:`, value);
+      }
+    }
+    
+    // Función para ir al login
+    function irALogin() {
+      window.location.href = '/login-organizacion';
+    }
+    
+    // Exponer funciones globalmente
+    window.limpiarStorage = limpiarStorage;
+    window.mostrarStorage = mostrarStorage;
+    window.irALogin = irALogin;
+    
+    console.log('🛠️ Funciones disponibles: window.limpiarStorage(), window.mostrarStorage()');
+  </script>
+</Layout>

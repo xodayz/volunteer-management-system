@@ -40,9 +40,33 @@ class OrganizacionAuthServiceClass {
 
       const data = await response.json();
       
-      if (data.success && data.token) {
-        localStorage.setItem('organizacionAuthToken', data.token);
-        localStorage.setItem('organizacion', JSON.stringify(data.data.organizacion));
+      console.log('🔍 Respuesta completa del login:', data);
+      
+      // Verificar múltiples estructuras de respuesta posibles
+      const token = data.token || data.data?.token;
+      const organizacion = data.data?.organizacion || data.organizacion;
+      
+      if (data.success && token) {
+        console.log('✅ Login exitoso, guardando datos...');
+        console.log('🔑 Token:', token);
+        console.log('🏢 Datos de organización:', organizacion);
+        
+        localStorage.setItem('organizacionAuthToken', token);
+        
+        // Verificar la estructura de datos de organización
+        if (organizacion) {
+          localStorage.setItem('organizacion', JSON.stringify(organizacion));
+          console.log('✅ Información de organización guardada');
+        } else {
+          console.log('⚠️ No se encontraron datos de organización en la respuesta');
+        }
+        
+        console.log('📱 Estado final del localStorage:', {
+          organizacionAuthToken: localStorage.getItem('organizacionAuthToken') ? 'Presente' : 'Ausente',
+          organizacion: localStorage.getItem('organizacion') ? 'Presente' : 'Ausente'
+        });
+      } else {
+        console.log('❌ Login falló:', data.message);
       }
 
       return data;

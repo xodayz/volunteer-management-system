@@ -136,7 +136,6 @@ class AuthService {
 
                 const password_hash = yield this.hashPassword(password);
 
-                // Preparar array de intereses para PostgreSQL
                 const interesesArray = Array.isArray(interes_habilidades) 
                     ? interes_habilidades 
                     : JSON.parse(interes_habilidades || '[]');

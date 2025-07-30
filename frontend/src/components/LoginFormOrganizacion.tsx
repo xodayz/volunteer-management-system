@@ -21,6 +21,7 @@ export default function LoginFormOrganizacion() {
       const result = await OrganizacionAuthService.login(formData);
       
       if (result.success) {
+        console.log('✅ Login exitoso, redirigiendo a dashboard de organizaciones...');
         window.location.href = '/dashboard-organizacion';
       } else {
         setError(result.message || 'Error en el inicio de sesión');

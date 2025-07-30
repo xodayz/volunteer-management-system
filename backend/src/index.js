@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const authRoutes = require('./routes/auth');
 const organizacionAuthRoutes = require('./routes/organizacionAuth');
+const eventosRoutes = require('./routes/eventos');
 require('dotenv').config();
 
 const app = express();
@@ -31,6 +32,7 @@ app.use(morgan('combined'));
 
 app.use('/api/auth', authRoutes.default || authRoutes);
 app.use('/api/organizacion', organizacionAuthRoutes);
+app.use('/api/eventos', eventosRoutes);
 
 app.get('/api/auth/test', (req, res) => {
     res.json({ message: 'Auth test working' });
@@ -56,6 +58,7 @@ app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
     console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:4321'}`);
     console.log(`🏢 Organizaciones endpoint: http://localhost:${PORT}/api/organizacion`);
+    console.log(`📅 Eventos endpoint: http://localhost:${PORT}/api/eventos`);
 });
 
 module.exports = app;
