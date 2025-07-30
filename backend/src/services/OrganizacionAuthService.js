@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const { OrganizacionModel } = require('../models/Organizacion');
 
 class OrganizacionAuthService {
-  // Registrar nueva organización
   static async register(organizacionData) {
     try {
       const {
@@ -13,7 +12,8 @@ class OrganizacionAuthService {
         password,
         telefono,
         sitioWeb,
-        descripcion
+        descripcion,
+        direccion
       } = organizacionData;
 
       const existingOrganizacion = await OrganizacionModel.findByEmail(correoRepresentante);
@@ -34,7 +34,8 @@ class OrganizacionAuthService {
         correoRepresentante,
         passwordHash,
         telefono,
-        sitioWeb
+        sitioWeb,
+        direccion
       });
 
       const token = jwt.sign(

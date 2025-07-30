@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Simple - Sistema de Voluntariado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50 p-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-8">Dashboard DEBUG Simple</h1>
+    
+    <div id="auth-status" class="bg-white p-6 rounded-lg shadow mb-6">
+        <h2 class="text-xl font-semibold mb-4">Estado de Autenticación</h2>
+        <div id="auth-info">⏳ Verificando...</div>
+    </div>
+    
+    <div id="debug-info" class="bg-blue-50 p-6 rounded-lg shadow mb-6">
+        <h2 class="text-xl font-semibold mb-4">Información de Debug</h2>
+        <div id="debug-content">⏳ Cargando...</div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4">Controles</h2>
+        <div class="space-x-4">
+            <button id="test-btn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                Test JS
+            </button>
+            <button id="check-auth-btn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Verificar Auth
+            </button>
+            <button id="show-storage-btn" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                Mostrar Storage
+            </button>
+            <button id="clear-storage-btn" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                Limpiar Storage
+            </button>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 Script iniciando...');
+        
+        function updateAuthInfo(message) {
+            const authInfo = document.getElementById('auth-info');
+            if (authInfo) {
+                authInfo.innerHTML = message;
+            }
+        }
+        
+        function updateDebugInfo(message) {
+            const debugContent = document.getElementById('debug-content');
+            if (debugContent) {
+                debugContent.innerHTML = message;
+            }
+        }
+        
+        function verificarAuth() {
+            console.log('🔍 Verificando autenticación...');
+            
+            const token = localStorage.getItem('organizacionAuthToken');
+            const organizacion = localStorage.getItem('organizacion');
+            
+            console.log('Token:', token ? 'PRESENTE' : 'AUSENTE');
+            console.log('Organización:', organizacion ? 'PRESENTE' : 'AUSENTE');
+            
+            if (token && organizacion) {
+                try {
+                    const orgData = JSON.parse(organizacion);
+                    const authMessage = `
+                        <div class="text-green-600">
+                            <div class="font-semibold">✅ Autenticación EXITOSA</div>
+                            <div class="mt-2 text-sm">
+                                <div><strong>Email:</strong> ${orgData.correo || 'N/A'}</div>
+                                <div><strong>Organización:</strong> ${orgData.nombre || orgData.nombreOrganizacion || 'N/A'}</div>
+                                <div><strong>Representante:</strong> ${orgData.nombreRepresentante || 'N/A'}</div>
+                            </div>
+                        </div>
+                    `;
+                    updateAuthInfo(authMessage);
+                    return true;
+                } catch (e) {
+                    console.error('Error parseando organización:', e);
+                    updateAuthInfo(`<div class="text-red-600">❌ Error parseando datos: ${e.message}</div>`);
+                    return false;
+                }
+            } else {
+                const missing = [];
+                if (!token) missing.push('token');
+                if (!organizacion) missing.push('organización');
+                
+                updateAuthInfo(`<div class="text-red-600">❌ Faltan: ${missing.join(', ')}</div>`);
+                return false;
+            }
+        }
+        
+        function mostrarStorage() {
+            console.log('📱 Contenido del localStorage:');
+            let storageContent = '<div class="text-sm space-y-1">';
+            
+            if (localStorage.length === 0) {
+                storageContent += '<div>localStorage está vacío</div>';
+            } else {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    const value = localStorage.getItem(key);
+                    console.log(`${key}:`, value);
+                    storageContent += `<div><strong>${key}:</strong> ${value ? (value.length > 50 ? value.substring(0, 50) + '...' : value) : 'null'}</div>`;
+                }
+            }
+            
+            storageContent += '</div>';
+            updateDebugInfo(storageContent);
+        }
+        
+        function limpiarStorage() {
+            if (confirm('¿Estás seguro de que quieres limpiar todo el localStorage?')) {
+                localStorage.clear();
+                console.log('🧹 localStorage limpiado');
+                verificarAuth();
+                mostrarStorage();
+            }
+        }
+        
+        // Configurar botones cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📱 DOM listo, configurando eventos...');
+            
+            // Test button
+            const testBtn = document.getElementById('test-btn');
+            if (testBtn) {
+                testBtn.addEventListener('click', function() {
+                    console.log('✅ Botón de test clickeado');
+                    alert('¡JavaScript funciona correctamente!');
+                });
+            }
+            
+            // Check auth button
+            const checkAuthBtn = document.getElementById('check-auth-btn');
+            if (checkAuthBtn) {
+                checkAuthBtn.addEventListener('click', verificarAuth);
+            }
+            
+            // Show storage button
+            const showStorageBtn = document.getElementById('show-storage-btn');
+            if (showStorageBtn) {
+                showStorageBtn.addEventListener('click', mostrarStorage);
+            }
+            
+            // Clear storage button
+            const clearStorageBtn = document.getElementById('clear-storage-btn');
+            if (clearStorageBtn) {
+                clearStorageBtn.addEventListener('click', limpiarStorage);
+            }
+            
+            // Verificación inicial
+            console.log('🔍 Haciendo verificación inicial...');
+            verificarAuth();
+            mostrarStorage();
+            
+            console.log('✅ Todo configurado correctamente');
+        });
+        
+        // Log de prueba cada 5 segundos
+        setInterval(function() {
+            console.log('⏰ Script sigue funcionando -', new Date().toLocaleTimeString());
+        }, 5000);
+        
+        console.log('🎉 Script cargado completamente');
+    </script>
+</body>
+</html>

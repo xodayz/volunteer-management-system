@@ -1,25 +1,75 @@
-import { useState } from 'react';
-import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Eye, EyeOff, Mail, Lock, User, Phone, MapPin, Calendar, Heart, ChevronDown } from 'lucide-react';
 import { AuthService, type RegisterData } from '../services/authService';
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
+  const [showInteresesDropdown, setShowInteresesDropdown] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<RegisterData>({
     username: '',
     nombre: '',
     correo: '',
     password: '',
-    telefono: ''
+    telefono: '',
+    fecha_nacimiento: '',
+    direccion: '',
+    interes_habilidades: []
   });
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowInteresesDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const validateAge = (birthDate: string): boolean => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    const age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      return age - 1 >= 18;
+    }
+    return age >= 18;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
     setSuccess('');
+
+    if (formData.password !== confirmPassword) {
+      setError('Las contraseñas no coinciden');
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.fecha_nacimiento && !validateAge(formData.fecha_nacimiento)) {
+      setError('Debes ser mayor de 18 años para registrarte');
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.interes_habilidades?.length === 0) {
+      setError('Debes seleccionar al menos un interés o habilidad');
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const result = await AuthService.register(formData);
@@ -44,7 +94,7 @@ export default function RegisterForm() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -52,6 +102,43 @@ export default function RegisterForm() {
     if (error) setError('');
     if (success) setSuccess('');
   };
+
+  const handleInteresesChange = (interes: string) => {
+    const currentIntereses = formData.interes_habilidades || [];
+    let newIntereses;
+    
+    if (currentIntereses.includes(interes)) {
+      newIntereses = currentIntereses.filter(item => item !== interes);
+    } else {
+      newIntereses = [...currentIntereses, interes];
+    }
+    
+    setFormData({
+      ...formData,
+      interes_habilidades: newIntereses
+    });
+    
+    if (error) setError('');
+    if (success) setSuccess('');
+  };
+
+  const interesesOptions = [
+    { value: 'educacion', label: 'Educación y Enseñanza' },
+    { value: 'salud', label: 'Salud y Bienestar' },
+    { value: 'medio_ambiente', label: 'Medio Ambiente' },
+    { value: 'asistencia_social', label: 'Asistencia Social' },
+    { value: 'tecnologia', label: 'Tecnología e Informática' },
+    { value: 'arte_cultura', label: 'Arte y Cultura' },
+    { value: 'deportes', label: 'Deportes y Recreación' },
+    { value: 'construccion', label: 'Construcción y Reparación' },
+    { value: 'administracion', label: 'Administración y Gestión' },
+    { value: 'marketing', label: 'Marketing y Comunicación' },
+    { value: 'cocina', label: 'Cocina y Alimentación' },
+    { value: 'traduccion', label: 'Traducción e Idiomas' },
+    { value: 'cuidado_animales', label: 'Cuidado de Animales' },
+    { value: 'organizacion_eventos', label: 'Organización de Eventos' },
+    { value: 'fotografia', label: 'Fotografía y Video' }
+  ];
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-green-500 via-blue-500 to-purple-500">
@@ -162,6 +249,116 @@ export default function RegisterForm() {
               </div>
             </div>
 
+            {/* Birth Date Field */}
+            <div>
+              <label htmlFor="fecha_nacimiento" className="block text-sm font-medium text-gray-700 mb-2">
+                Fecha de Nacimiento
+              </label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="date"
+                  id="fecha_nacimiento"
+                  name="fecha_nacimiento"
+                  value={formData.fecha_nacimiento}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-colors bg-white text-gray-900"
+                />
+              </div>
+            </div>
+
+            {/* Address Field */}
+            <div>
+              <label htmlFor="direccion" className="block text-sm font-medium text-gray-700 mb-2">
+                Dirección
+              </label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-3 text-gray-400" size={20} />
+                <textarea
+                  id="direccion"
+                  name="direccion"
+                  value={formData.direccion}
+                  onChange={handleChange}
+                  rows={3}
+                  placeholder="Dirección completa donde resides"
+                  required
+                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-colors bg-white text-gray-900 placeholder-gray-500 resize-none"
+                />
+              </div>
+            </div>
+
+            {/* Interests and Skills Field */}
+            <div ref={dropdownRef}>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Intereses y Habilidades *
+              </label>
+              <div className="relative">
+                <Heart className="absolute left-3 top-3 text-gray-400 z-10" size={20} />
+                <button
+                  type="button"
+                  onClick={() => setShowInteresesDropdown(!showInteresesDropdown)}
+                  className="w-full pl-12 pr-10 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-colors bg-white text-gray-900 text-left min-h-[48px] flex items-center justify-between"
+                >
+                  <span className="text-sm">
+                    {formData.interes_habilidades && formData.interes_habilidades.length > 0
+                      ? `${formData.interes_habilidades.length} seleccionado(s)`
+                      : 'Selecciona tus intereses y habilidades'}
+                  </span>
+                  <ChevronDown 
+                    className={`w-5 h-5 text-gray-400 transition-transform ${showInteresesDropdown ? 'rotate-180' : ''}`} 
+                  />
+                </button>
+                
+                {showInteresesDropdown && (
+                  <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {interesesOptions.map((option) => (
+                      <label
+                        key={option.value}
+                        className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={formData.interes_habilidades?.includes(option.value) || false}
+                          onChange={() => handleInteresesChange(option.value)}
+                          className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 mr-3"
+                        />
+                        <span className="text-sm text-gray-700">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              {/* Selected interests display */}
+              {formData.interes_habilidades && formData.interes_habilidades.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {formData.interes_habilidades.map((interes) => {
+                    const option = interesesOptions.find(opt => opt.value === interes);
+                    return (
+                      <span
+                        key={interes}
+                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                      >
+                        {option?.label}
+                        <button
+                          type="button"
+                          onClick={() => handleInteresesChange(interes)}
+                          className="ml-1 text-green-600 hover:text-green-800"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+              
+              <p className="mt-2 text-xs text-gray-500">
+                Selecciona al menos un interés o habilidad para tu perfil de voluntario.
+              </p>
+            </div>
+
             {/* Password Field */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
@@ -187,6 +384,36 @@ export default function RegisterForm() {
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
+            </div>
+
+            {/* Confirm Password Field */}
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                Confirmar Contraseña
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full pl-12 pr-12 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-colors bg-white text-gray-900 placeholder-gray-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+              {confirmPassword && formData.password !== confirmPassword && (
+                <p className="mt-1 text-sm text-red-600">Las contraseñas no coinciden</p>
+              )}
               <p className="mt-2 text-xs text-gray-500">
                 La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula y un número.
               </p>

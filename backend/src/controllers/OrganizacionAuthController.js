@@ -40,6 +40,9 @@ const registerValidation = [
     .optional()
     .isURL()
     .withMessage('Debe ser una URL válida'),
+  body('direccion')
+    .isLength({ min: 10, max: 300 })
+    .withMessage('La dirección debe tener entre 10 y 300 caracteres'),
   body('descripcion')
     .isLength({ min: 10, max: 1000 })
     .withMessage('La descripción debe tener entre 10 y 1000 caracteres')

@@ -11,6 +11,9 @@ export interface RegisterData {
   correo: string;
   password: string;
   telefono?: string;
+  fecha_nacimiento?: string;
+  direccion?: string;
+  interes_habilidades?: string[];
 }
 
 export interface ApiResponse<T = any> {

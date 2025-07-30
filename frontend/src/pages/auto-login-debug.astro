@@ -1,0 +1,54 @@
+---
+---
+
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto Login - Debug</title>
+</head>
+<body>
+  <h1>Auto Login en progreso...</h1>
+  <p id="status">Configurando autenticación...</p>
+
+  <script>
+    async function autoLogin() {
+      const statusEl = document.getElementById('status');
+      
+      try {
+        statusEl.textContent = 'Haciendo login...';
+        
+        const response = await fetch('http://localhost:3001/api/organizacion/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: 'test@organizacion.com',
+            password: 'Test123'
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.success && data.data?.token) {
+          localStorage.setItem('organizacionAuthToken', data.data.token);
+          localStorage.setItem('organizacion', JSON.stringify(data.data.organizacion));
+          
+          statusEl.textContent = 'Login exitoso! Redirigiendo...';
+          
+          setTimeout(() => {
+            window.location.href = '/dashboard-organizacion';
+          }, 1000);
+        } else {
+          statusEl.textContent = 'Error en login: ' + data.message;
+        }
+      } catch (error) {
+        statusEl.textContent = 'Error de conexión: ' + error.message;
+      }
+    }
+
+    autoLogin();
+  </script>
+</body>
+</html>

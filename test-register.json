@@ -1,0 +1,9 @@
+{
+  "nombreOrganizacion": "Test Organization",
+  "nombreRepresentante": "Test Representative",
+  "correoRepresentante": "test@organizacion.com",
+  "telefono": "8095555555",
+  "password": "Test123",
+  "direccion": "123 Test Street, Santo Domingo, República Dominicana",
+  "descripcion": "Esta es una organización de prueba para testing de la aplicación de voluntariado"
+}

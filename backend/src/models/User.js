@@ -63,9 +63,9 @@ class UserModel {
                 const query = `
         INSERT INTO usuarios (
           username, nombre, correo, password_hash, 
-          telefono, fecha_nacimiento, genero, direccion, 
+          telefono, fecha_nacimiento, direccion, 
           interes_habilidades, rol_usuario
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *
       `;
                 const values = [
@@ -75,7 +75,6 @@ class UserModel {
                     userData.password_hash,
                     userData.telefono,
                     userData.fecha_nacimiento,
-                    userData.genero,
                     userData.direccion,
                     userData.interes_habilidades,
                     userData.rol_usuario || 'voluntario'

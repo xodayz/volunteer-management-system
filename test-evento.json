@@ -1,0 +1,10 @@
+{
+  "titulo": "Evento de Prueba 3",
+  "descripcion": "Este es otro evento de prueba para verificar la funcionalidad",
+  "fechaInicio": "2025-07-30",
+  "fechaFin": "2025-07-31",
+  "ubicacion": "Santo Domingo",
+  "tipoEvento": "voluntariado",
+  "capacidadMaxima": 50,
+  "requisitos": "Ser mayor de edad"
+}
