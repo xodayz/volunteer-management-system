@@ -371,17 +371,17 @@ class EventService {
       }
 
       const event = eventCheck.rows[0];
-      if (event.voluntarios_inscritos >= event.capacidad_maxima) {
+      if (event.voluntarios_inscritos.includes(volunteerId)) {
         await client.query('ROLLBACK');
         return {
           success: false,
-          message: 'El evento ya alcanzó su capacidad máxima'
+          message: 'El voluntario ya está inscrito en el evento'
         };
       }
 
       await client.query(
-        'UPDATE eventos SET voluntarios_inscritos = voluntarios_inscritos + 1 WHERE id_evento = $1',
-        [eventId]
+        'UPDATE eventos SET voluntarios_inscritos = array_append(voluntarios_inscritos, $1) WHERE id_evento = $2',
+        [volunteerId, eventId]
       );
 
       await client.query('COMMIT');
@@ -405,7 +405,7 @@ class EventService {
 
   static async removeVolunteerFromEvent(eventId, volunteerId, organizacionId) {
     const client = await pool.connect();
-    
+
     try {
       await client.query('BEGIN');
 
@@ -423,8 +423,8 @@ class EventService {
       }
 
       await client.query(
-        'UPDATE eventos SET voluntarios_inscritos = GREATEST(0, voluntarios_inscritos - 1) WHERE id_evento = $1',
-        [eventId]
+        'UPDATE eventos SET voluntarios_inscritos = array_remove(voluntarios_inscritos, $1) WHERE id_evento = $2',
+        [volunteerId, eventId]
       );
 
       await client.query('COMMIT');

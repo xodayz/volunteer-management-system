@@ -30,9 +30,9 @@ async function updateEventTableStructure() {
       
       // Eliminar y recrear la columna
       await client.query('ALTER TABLE eventos DROP COLUMN IF EXISTS voluntarios_inscritos');
-      await client.query('ALTER TABLE eventos ADD COLUMN voluntarios_inscritos INTEGER DEFAULT 0');
+      await client.query('ALTER TABLE eventos ADD COLUMN voluntarios_inscritos TEXT[] DEFAULT ARRAY[]::TEXT[]');
       
-      console.log('✅ Campo voluntarios_inscritos corregido a INTEGER');
+      console.log('✅ Campo voluntarios_inscritos corregido a TEXT[]');
     }
 
     // Corregir campo requisitos si es necesario

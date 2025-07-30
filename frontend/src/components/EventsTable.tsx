@@ -134,10 +134,10 @@ const EventsTable: React.FC<EventsTableProps> = ({
               <div>
                 <div className="font-medium">Participantes</div>
                 <div>
-                  {event.voluntarios_inscritos || 0} / {event.capacidad_maxima}
+                  {event.voluntarios_inscritos?.length || 0} / {event.capacidad_maxima}
                 </div>
                 <div className="text-xs">
-                  {event.capacidad_maxima - (event.voluntarios_inscritos || 0)} disponibles
+                  {event.capacidad_maxima - (event.voluntarios_inscritos?.length || 0)} disponibles
                 </div>
               </div>
             </div>

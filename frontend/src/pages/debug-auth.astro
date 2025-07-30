@@ -194,6 +194,7 @@
       updateLogs();
     }
 
+    // Event handlers
     document.getElementById('manual-login').addEventListener('submit', (e) => {
       e.preventDefault();
       const email = document.getElementById('email').value;
@@ -201,11 +202,13 @@
       doManualLogin(email, password);
     });
 
+    // Hacer funciones globales
     window.checkLocalStorage = checkLocalStorage;
     window.testAPI = testAPI;
     window.clearLogs = clearLogs;
     window.log = log;
 
+    // Verificar estado inicial
     checkLocalStorage();
     log('🚀 Debug page cargada');
   </script>

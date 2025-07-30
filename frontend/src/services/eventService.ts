@@ -23,7 +23,7 @@ export interface Event {
   direccion: string;
   id_categoria: number;
   capacidad_maxima: number;
-  voluntarios_inscritos: number;
+  voluntarios_inscritos: string[];
   requisitos: string[];
   estado_evento: string;
   created_at: string;
