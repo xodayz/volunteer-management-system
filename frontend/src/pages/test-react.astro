@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+import BasicReact from '../components/BasicReact';
+---
+
+<Layout title="Test React Básico">
+  <h1 style="background: green; color: white; padding: 20px; text-align: center;">
+    ASTRO HTML ESTÁTICO FUNCIONA
+  </h1>
+  
+  <BasicReact client:only="react" />
+  
+  <div style="background: orange; color: black; padding: 20px; text-align: center; margin-top: 20px;">
+    <p>Si ves el cuadro azul arriba, React funciona</p>
+  </div>
+</Layout>

@@ -476,6 +476,120 @@ class EventService {
       };
     }
   }
+
+  static async getAllEvents() {
+    const client = await pool.connect();
+    
+    try {
+      const query = `
+        SELECT 
+          e.*,
+          c.nombre as categoria_nombre,
+          o.nombre as organizacion_nombre
+        FROM eventos e
+        LEFT JOIN categorias_eventos c ON e.id_categoria = c.id_categoria
+        LEFT JOIN organizaciones o ON e.id_organizacion = o.id_organizacion
+        WHERE e.estado_evento IN ('activo', 'planificado')
+        ORDER BY e.fecha_inicio ASC
+      `;
+      
+      const result = await client.query(query);
+      
+      return {
+        success: true,
+        data: result.rows
+      };
+    } catch (error) {
+      console.error('Error al obtener todos los eventos:', error);
+      return {
+        success: false,
+        message: 'Error al obtener eventos'
+      };
+    } finally {
+      client.release();
+    }
+  }
+
+  static async registerVolunteerToEvent(eventId, userId) {
+    const client = await pool.connect();
+    
+    try {
+      await client.query('BEGIN');
+
+      // Verificar si el evento existe y está activo
+      const eventCheck = await client.query(
+        'SELECT * FROM eventos WHERE id_evento = $1 AND estado_evento = $2',
+        [eventId, 'activo']
+      );
+
+      if (eventCheck.rows.length === 0) {
+        await client.query('ROLLBACK');
+        return {
+          success: false,
+          message: 'Evento no encontrado o no está activo'
+        };
+      }
+
+      // Verificar si el usuario existe
+      const userCheck = await client.query(
+        'SELECT * FROM usuarios WHERE id_usuario = $1',
+        [userId]
+      );
+
+      if (userCheck.rows.length === 0) {
+        await client.query('ROLLBACK');
+        return {
+          success: false,
+          message: 'Usuario no encontrado'
+        };
+      }
+
+      const event = eventCheck.rows[0];
+      
+      // Verificar si el usuario ya está inscrito
+      if (event.voluntarios_inscritos.includes(userId.toString())) {
+        await client.query('ROLLBACK');
+        return {
+          success: false,
+          message: 'Ya estás inscrito en este evento'
+        };
+      }
+
+      // Verificar capacidad máxima
+      if (event.voluntarios_inscritos.length >= event.capacidad_maxima) {
+        await client.query('ROLLBACK');
+        return {
+          success: false,
+          message: 'El evento ha alcanzado su capacidad máxima'
+        };
+      }
+
+      // Agregar el voluntario al evento
+      const newVolunteersArray = [...event.voluntarios_inscritos, userId.toString()];
+      
+      await client.query(
+        'UPDATE eventos SET voluntarios_inscritos = $1, updated_at = CURRENT_TIMESTAMP WHERE id_evento = $2',
+        [newVolunteersArray, eventId]
+      );
+
+      await client.query('COMMIT');
+
+      return {
+        success: true,
+        message: 'Inscripción exitosa'
+      };
+
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error('Error al inscribir voluntario:', error);
+      return {
+        success: false,
+        message: 'Error al procesar la inscripción'
+      };
+    } finally {
+      client.release();
+    }
+  }
 }
 
 module.exports = EventService;

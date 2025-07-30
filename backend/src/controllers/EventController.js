@@ -409,6 +409,64 @@ class EventController {
       });
     }
   }
+
+  static async getAllEvents(req, res) {
+    try {
+      const result = await EventService.getAllEvents();
+
+      if (result.success) {
+        res.json({
+          success: true,
+          data: result.data
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: result.message || 'Error al obtener eventos'
+        });
+      }
+    } catch (error) {
+      console.error('Error en getAllEvents:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor'
+      });
+    }
+  }
+
+  static async registerVolunteerToEvent(req, res) {
+    try {
+      const eventId = parseInt(req.params.id);
+      const userId = req.user.id; // Obtener del token de autenticación
+
+      if (isNaN(eventId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'ID de evento inválido'
+        });
+      }
+
+      const result = await EventService.registerVolunteerToEvent(eventId, userId);
+
+      if (result.success) {
+        res.json({
+          success: true,
+          message: 'Te has inscrito al evento exitosamente'
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: result.message || 'Error al inscribirse al evento'
+        });
+      }
+    } catch (error) {
+      console.error('Error en registerVolunteerToEvent:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor'
+      });
+    }
+  }
 }
 
 module.exports = EventController;

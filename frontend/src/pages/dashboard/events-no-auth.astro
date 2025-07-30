@@ -1,0 +1,13 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import EventsList from '../../components/EventsList';
+---
+
+<Layout title="Eventos - Sin ProtectedRoute">
+  <div style="background: orange; color: black; padding: 20px; text-align: center; margin-bottom: 20px;">
+    <h2>PÁGINA SIN PROTECTEDROUTE</h2>
+    <p>Si ves el componente EventsList abajo, significa que ProtectedRoute era el problema</p>
+  </div>
+  
+  <EventsList client:load />
+</Layout>

@@ -12,7 +12,64 @@ import Layout from '../layouts/Layout.astro';
             <h1 class="text-xl font-bold text-purple-600">Portal de Organizaciones</h1>
           </div>
           <div class="flex items-center space-x-4">
-            <a href="#" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">
+            <a href="#" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded      // Total de voluntarios registrados (suma de todos los voluntarios_inscritos)
+      const totalVoluntarios = events.reduce((sum, event) => {
+        // Priorizar voluntarios_inscritos, luego participantesRegistrados
+        if (event.voluntarios_inscritos && Array.isArray(event.voluntarios_inscritos)) {
+          return sum + event.voluntarios_inscritos.length;
+        } else if (event.participantesRegistrados) {
+          return sum + event.participantesRegistrados;
+        }
+        return sum;
+      }, 0);
+
+      // Estimación de horas de voluntariado (basado en duración del evento)
+      const horasVoluntariado = events.reduce((sum, event) => {
+        let voluntariosEvento = 0;
+        
+        // Obtener número de voluntarios
+        if (event.voluntarios_inscritos && Array.isArray(event.voluntarios_inscritos)) {
+          voluntariosEvento = event.voluntarios_inscritos.length;
+        } else if (event.participantesRegistrados) {
+          voluntariosEvento = event.participantesRegistrados;
+        }
+        
+        if (voluntariosEvento > 0) {
+          try {
+            // Intentar múltiples formatos de fecha
+            let start, end;
+            
+            // Formato 1: fechaInicio (ISO string)
+            if (event.fechaInicio) {
+              start = new Date(event.fechaInicio);
+            } else if (event.fecha_inicio) {
+              start = new Date(event.fecha_inicio);
+            }
+            
+            if (event.fechaFin) {
+              end = new Date(event.fechaFin);
+            } else if (event.fecha_fin) {
+              end = new Date(event.fecha_fin);
+            }
+            
+            // Validar que las fechas sean válidas
+            if (start && end && !isNaN(start.getTime()) && !isNaN(end.getTime())) {
+              const duracionMs = end.getTime() - start.getTime();
+              const duracionHoras = Math.max(1, Math.round(duracionMs / (1000 * 60 * 60))); // Mínimo 1 hora
+              return sum + (voluntariosEvento * duracionHoras);
+            } else {
+              // Si no podemos calcular la duración, usar 4 horas por defecto
+              console.warn('No se pudo calcular duración para evento:', event.id || event.titulo);
+              return sum + (voluntariosEvento * 4);
+            }
+          } catch (error) {
+            console.error('Error calculando horas para evento:', event.id || event.titulo, error);
+            // Usar 4 horas por defecto en caso de error
+            return sum + (voluntariosEvento * 4);
+          }
+        }
+        return sum;
+      }, 0);dium">
               Eventos
             </a>
             <a href="#" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">
@@ -657,30 +714,109 @@ import Layout from '../layouts/Layout.astro';
     }
 
     function updateStats() {
+      console.log('🔄 Actualizando estadísticas con', events.length, 'eventos');
+      
       const now = new Date();
       
+      // Eventos activos: eventos que están en curso (entre fecha_inicio y fecha_fin)
       const eventosActivos = events.filter(event => {
-        const start = new Date(event.fechaInicio);
-        const end = new Date(event.fechaFin);
-        return now >= start && now <= end;
+        try {
+          // Manejar diferentes formatos de fecha
+          let start, end;
+          
+          if (event.fechaInicio) {
+            start = new Date(event.fechaInicio);
+          } else if (event.fecha_inicio) {
+            start = new Date(event.fecha_inicio);
+          }
+          
+          if (event.fechaFin) {
+            end = new Date(event.fechaFin);
+          } else if (event.fecha_fin) {
+            end = new Date(event.fecha_fin);
+          }
+          
+          // Validar fechas
+          if (!start || !end || isNaN(start.getTime()) || isNaN(end.getTime())) {
+            console.warn('Fechas inválidas para evento:', event.id || event.titulo);
+            return false;
+          }
+          
+          const isActive = now >= start && now <= end;
+          const isActiveStatus = !event.estado || event.estado === 'activo' || event.estado === 'planificado';
+          
+          return isActive && isActiveStatus;
+        } catch (error) {
+          console.error('Error procesando evento activo:', event.id || event.titulo, error);
+          return false;
+        }
       }).length;
 
+      // Eventos completados: eventos que ya terminaron
       const eventosCompletados = events.filter(event => {
-        const end = new Date(event.fechaFin);
-        return now > end;
+        try {
+          let end;
+          
+          if (event.fechaFin) {
+            end = new Date(event.fechaFin);
+          } else if (event.fecha_fin) {
+            end = new Date(event.fecha_fin);
+          }
+          
+          if (!end || isNaN(end.getTime())) {
+            return false;
+          }
+          
+          return now > end || event.estado === 'completado';
+        } catch (error) {
+          console.error('Error procesando evento completado:', event.id || event.titulo, error);
+          return false;
+        }
       }).length;
 
-      const totalVoluntarios = events.reduce((sum, event) => sum + (event.participantesRegistrados || 0), 0);
+      // Total de voluntarios registrados (suma de todos los voluntarios_inscritos)
+      const totalVoluntarios = events.reduce((sum, event) => {
+        if (event.voluntarios_inscritos && Array.isArray(event.voluntarios_inscritos)) {
+          return sum + event.voluntarios_inscritos.length;
+        }
+        return sum;
+      }, 0);
 
+      // Estimación de horas de voluntariado (asumiendo 4 horas promedio por evento por voluntario)
+      const horasVoluntariado = events.reduce((sum, event) => {
+        if (event.voluntarios_inscritos && Array.isArray(event.voluntarios_inscritos)) {
+          // Calcular horas basado en duración del evento
+          const start = new Date(event.fecha_inicio);
+          const end = new Date(event.fecha_fin);
+          const duracionHoras = Math.max(1, Math.round((end - start) / (1000 * 60 * 60))); // Mínimo 1 hora
+          return sum + (event.voluntarios_inscritos.length * duracionHoras);
+        }
+        return sum;
+      }, 0);
+
+      // Actualizar elementos DOM con validación
       const eventosActivosEl = document.getElementById('eventos-activos');
       const eventosCompletadosEl = document.getElementById('eventos-completados');
       const voluntariosRegistradosEl = document.getElementById('voluntarios-registrados');
       const horasVoluntariadoEl = document.getElementById('horas-voluntariado');
 
-      if (eventosActivosEl) eventosActivosEl.textContent = eventosActivos.toString();
-      if (eventosCompletadosEl) eventosCompletadosEl.textContent = eventosCompletados.toString();
-      if (voluntariosRegistradosEl) voluntariosRegistradosEl.textContent = totalVoluntarios.toString();
-      if (horasVoluntariadoEl) horasVoluntariadoEl.textContent = (totalVoluntarios * 4).toString();
+      // Validar que los valores sean números válidos
+      const eventosActivosValor = isNaN(eventosActivos) ? 0 : eventosActivos;
+      const eventosCompletadosValor = isNaN(eventosCompletados) ? 0 : eventosCompletados;
+      const totalVoluntariosValor = isNaN(totalVoluntarios) ? 0 : totalVoluntarios;
+      const horasVoluntariadoValor = isNaN(horasVoluntariado) ? 0 : horasVoluntariado;
+
+      if (eventosActivosEl) eventosActivosEl.textContent = eventosActivosValor.toString();
+      if (eventosCompletadosEl) eventosCompletadosEl.textContent = eventosCompletadosValor.toString();
+      if (voluntariosRegistradosEl) voluntariosRegistradosEl.textContent = totalVoluntariosValor.toString();
+      if (horasVoluntariadoEl) horasVoluntariadoEl.textContent = horasVoluntariadoValor.toString();
+
+      console.log('📊 Estadísticas actualizadas:', {
+        eventosActivos: eventosActivosValor,
+        eventosCompletados: eventosCompletadosValor,
+        totalVoluntarios: totalVoluntariosValor,
+        horasVoluntariado: horasVoluntariadoValor
+      });
     }
 
     function showError(message) {

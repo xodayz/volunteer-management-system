@@ -140,6 +140,46 @@ class EventService {
     }
   }
 
+  async getAllEvents(): Promise<Event[]> {
+    try {
+      const response = await fetch(`${this.baseURL}/all`);
+      if (!response.ok) {
+        throw new Error('Error al obtener los eventos');
+      }
+      const data = await response.json();
+      return data.success ? data.data : [];
+    } catch (error) {
+      console.error('Error al obtener eventos:', error);
+      throw error;
+    }
+  }
+
+  async registerToEvent(eventId: number): Promise<{ success: boolean; message?: string }> {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No se encontró token de autenticación');
+      }
+
+      const response = await fetch(`${this.baseURL}/${eventId}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error al inscribirse al evento:', error);
+      return {
+        success: false,
+        message: 'Error de conexión con el servidor'
+      };
+    }
+  }
+
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {

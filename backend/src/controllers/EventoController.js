@@ -193,7 +193,8 @@ class EventoController {
         requisitos: Array.isArray(evento.requisitos) ? evento.requisitos.join(', ') : evento.requisitos,
         estado: evento.estado_evento,
         organizacionNombre: evento.organizacion_nombre,
-        participantesRegistrados: 0,
+        voluntarios_inscritos: evento.voluntarios_inscritos || [],
+        participantesRegistrados: evento.voluntarios_inscritos ? evento.voluntarios_inscritos.length : 0,
         createdAt: evento.created_at,
         updatedAt: evento.updated_at
       }));

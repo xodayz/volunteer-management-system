@@ -48,7 +48,7 @@ export default function Dashboard() {
             ¡Bienvenido, {user?.nombre || 'Voluntario'}!
           </h2>
           <p className="text-gray-600">
-            Gracias por formar parte de nuestra comunidad de voluntarios. Aquí puedes gestionar tu perfil y encontrar nuevas oportunidades para ayudar.
+            Gracias por formar parte de nuestra comunidad de voluntarios. Aquí puedes gestionar tu perfil y encontrar nuevos eventos para ayudar.
           </p>
         </div>
 
@@ -90,10 +90,10 @@ export default function Dashboard() {
           <h3 className="text-xl font-bold text-gray-800 mb-6">Acciones Rápidas</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <a
-              href="/dashboard/opportunities"
+              href="/dashboard/events"
               className="bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-lg transition-colors text-center"
             >
-              Ver Oportunidades
+              Eventos
             </a>
             <button className="bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg transition-colors">
               Mi Perfil
