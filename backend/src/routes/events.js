@@ -18,7 +18,11 @@ router.delete('/:id', authenticateOrganization, EventController.deleteEvent);
 // Rutas para gestión de voluntarios en eventos
 router.post('/:id/volunteer', authenticateOrganization, EventController.addVolunteerToEvent);
 router.post('/:id/register', authenticateUser, EventController.registerVolunteerToEvent);
+router.get('/:id/check-registration', authenticateUser, EventController.checkUserRegistration);
 router.delete('/:id/volunteer/:volunteerId', authenticateOrganization, EventController.removeVolunteerFromEvent);
 router.get('/:id/volunteers', authenticateOrganization, EventController.getEventVolunteers);
+
+// Ruta para obtener eventos inscritos por el usuario
+router.get('/my-inscribed', authenticateUser, EventController.getUserInscribedEvents);
 
 module.exports = router;

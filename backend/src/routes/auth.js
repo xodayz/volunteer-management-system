@@ -12,6 +12,8 @@ router.post('/register', AuthController_1.registerValidation, AuthController_1.A
 
 router.get('/verify', auth_1.authenticateToken, AuthController_1.AuthController.verifyToken);
 
+router.get('/profile', auth_1.authenticateToken, AuthController_1.AuthController.getProfile);
+
 router.post('/logout', auth_1.authenticateToken, AuthController_1.AuthController.logout);
 
 router.get('/test', (req, res) => {

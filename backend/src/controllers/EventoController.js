@@ -281,6 +281,234 @@ class EventoController {
       });
     }
   }
+
+  async deleteEvento(req, res) {
+    try {
+      console.log('🗑️ Eliminando evento...');
+      console.log('📝 ID del evento:', req.params.id);
+      console.log('👤 Usuario autenticado:', req.user);
+
+      const eventoId = req.params.id;
+      const organizacionId = req.user.id;
+
+      // Validar que el ID del evento sea válido
+      if (!eventoId || isNaN(eventoId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'ID de evento inválido'
+        });
+      }
+
+      // Verificar que el evento existe y pertenece a la organización
+      const eventoQuery = `
+        SELECT e.id_evento, e.nombre as titulo, e.id_organizacion, o.nombre as organizacion_nombre
+        FROM eventos e
+        INNER JOIN organizaciones o ON e.id_organizacion = o.id_organizacion
+        WHERE e.id_evento = $1 AND e.id_organizacion = $2
+      `;
+      
+      const eventoResult = await pool.query(eventoQuery, [eventoId, organizacionId]);
+
+      if (eventoResult.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Evento no encontrado o no tienes permisos para eliminarlo'
+        });
+      }
+
+      const evento = eventoResult.rows[0];
+      console.log(`📊 Evento encontrado: ${evento.titulo}`);
+
+      // Eliminar el evento directamente (sin verificar voluntarios por ahora)
+      const deleteEventoQuery = 'DELETE FROM eventos WHERE id_evento = $1 AND id_organizacion = $2';
+      const deleteResult = await pool.query(deleteEventoQuery, [eventoId, organizacionId]);
+
+      if (deleteResult.rowCount === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'No se pudo eliminar el evento o no tienes permisos'
+        });
+      }
+      
+      console.log('✅ Evento eliminado exitosamente');
+
+      res.status(200).json({
+        success: true,
+        message: 'Evento eliminado exitosamente',
+        data: {
+          eventoEliminado: {
+            id: evento.id_evento,
+            titulo: evento.titulo,
+            organizacion: evento.organizacion_nombre
+          },
+          voluntariosAfectados: 0 // Por ahora 0, hasta implementar tabla de voluntarios
+        }
+      });
+
+    } catch (error) {
+      console.error('❌ Error eliminando evento:', error);
+      
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor al eliminar evento',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  }
+
+  async updateEvento(req, res) {
+    try {
+      console.log('📝 Actualizando evento...');
+      console.log('📝 ID del evento:', req.params.id);
+      console.log('👤 Usuario autenticado:', req.user);
+      console.log('📋 Datos recibidos:', req.body);
+
+      const eventoId = req.params.id;
+      const organizacionId = req.user.id;
+      const {
+        titulo,
+        descripcion,
+        fechaInicio,
+        fechaFin,
+        capacidadMaxima,
+        requisitos
+      } = req.body;
+
+      // Validar que el ID del evento sea válido
+      if (!eventoId || isNaN(eventoId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'ID de evento inválido'
+        });
+      }
+
+      // Validar campos requeridos
+      if (!titulo || !descripcion || !fechaInicio || !fechaFin) {
+        return res.status(400).json({
+          success: false,
+          message: 'Todos los campos requeridos deben estar presentes'
+        });
+      }
+
+      // Verificar que el evento existe y pertenece a la organización
+      const eventoQuery = `
+        SELECT e.id_evento, e.nombre as titulo, e.id_organizacion, o.nombre as organizacion_nombre
+        FROM eventos e
+        INNER JOIN organizaciones o ON e.id_organizacion = o.id_organizacion
+        WHERE e.id_evento = $1 AND e.id_organizacion = $2
+      `;
+      
+      const eventoResult = await pool.query(eventoQuery, [eventoId, organizacionId]);
+
+      if (eventoResult.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Evento no encontrado o no tienes permisos para editarlo'
+        });
+      }
+
+      const evento = eventoResult.rows[0];
+      console.log('🎯 Evento a actualizar:', evento);
+
+      // Procesar fechas y horas
+      let fechaInicioFormatted, fechaFinFormatted, horaInicioFormatted, horaFinFormatted;
+
+      try {
+        const fechaInicioDate = new Date(fechaInicio);
+        const fechaFinDate = new Date(fechaFin);
+
+        fechaInicioFormatted = fechaInicioDate.toISOString().split('T')[0];
+        fechaFinFormatted = fechaFinDate.toISOString().split('T')[0];
+        horaInicioFormatted = fechaInicioDate.toTimeString().slice(0, 8);
+        horaFinFormatted = fechaFinDate.toTimeString().slice(0, 8);
+
+        console.log('📅 Fechas procesadas:', {
+          fechaInicio: fechaInicioFormatted,
+          fechaFin: fechaFinFormatted,
+          horaInicio: horaInicioFormatted,
+          horaFin: horaFinFormatted
+        });
+      } catch (dateError) {
+        console.error('❌ Error procesando fechas:', dateError);
+        return res.status(400).json({
+          success: false,
+          message: 'Formato de fecha inválido'
+        });
+      }
+
+      // Actualizar el evento en la base de datos
+      const updateQuery = `
+        UPDATE eventos 
+        SET 
+          nombre = $1,
+          descripcion = $2,
+          fecha_inicio = $3,
+          fecha_fin = $4,
+          hora_inicio = $5,
+          hora_fin = $6,
+          capacidad_maxima = $7,
+          requisitos = $8,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id_evento = $9 AND id_organizacion = $10
+        RETURNING *
+      `;
+
+      const updateValues = [
+        titulo,
+        descripcion,
+        fechaInicioFormatted,
+        fechaFinFormatted,
+        horaInicioFormatted,
+        horaFinFormatted,
+        capacidadMaxima ? parseInt(capacidadMaxima) : null,
+        requisitos || null,
+        eventoId,
+        organizacionId
+      ];
+
+      console.log('🔄 Ejecutando update con valores:', updateValues);
+
+      const updateResult = await pool.query(updateQuery, updateValues);
+
+      if (updateResult.rowCount === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'No se pudo actualizar el evento'
+        });
+      }
+
+      const eventoActualizado = updateResult.rows[0];
+      console.log('✅ Evento actualizado exitosamente:', eventoActualizado);
+
+      res.status(200).json({
+        success: true,
+        message: 'Evento actualizado exitosamente',
+        data: {
+          evento: {
+            id: eventoActualizado.id_evento,
+            titulo: eventoActualizado.nombre,
+            descripcion: eventoActualizado.descripcion,
+            fechaInicio: eventoActualizado.fecha_inicio,
+            fechaFin: eventoActualizado.fecha_fin,
+            horaInicio: eventoActualizado.hora_inicio,
+            horaFin: eventoActualizado.hora_fin,
+            capacidadMaxima: eventoActualizado.capacidad_maxima,
+            requisitos: eventoActualizado.requisitos,
+            updatedAt: eventoActualizado.updated_at
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error('❌ Error actualizando evento:', error);
+      
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor al actualizar evento',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  }
 }
 
 module.exports = new EventoController();

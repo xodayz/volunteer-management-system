@@ -72,15 +72,9 @@ import Layout from '../layouts/Layout.astro';
       }, 0);dium">
               Eventos
             </a>
-            <a href="#" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">
-              Voluntarios
-            </a>
-            <a href="#" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">
-              Perfil
-            </a>
-            <a href="/login-organizacion" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+            <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
               Cerrar Sesión
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -159,7 +153,7 @@ import Layout from '../layouts/Layout.astro';
 
     <!-- Modal para crear evento -->
     <div id="event-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center p-6 border-b border-gray-200">
           <h2 class="text-xl font-semibold text-gray-800">Crear Nuevo Evento</h2>
           <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
@@ -259,10 +253,220 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </div>
 
+  <!-- Modal de Logout -->
+  <div id="logout-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Cerrar Sesión</h3>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que quieres cerrar sesión?</p>
+      </div>
+      <div class="modal-footer">
+        <button id="cancel-logout" class="btn-cancel">Cancelar</button>
+        <button id="confirm-logout" class="btn-confirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Eliminación de Evento -->
+  <div id="delete-event-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="text-red-600">
+          <svg class="w-6 h-6 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+          Eliminar Evento
+        </h3>
+      </div>
+      <div class="modal-body">
+        <p class="text-gray-700 mb-3">¿Estás seguro de que quieres eliminar este evento?</p>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+          <div class="flex items-start">
+            <svg class="w-5 h-5 text-yellow-600 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            <div>
+              <p class="text-yellow-800 text-sm font-medium">Advertencia:</p>
+              <p class="text-yellow-700 text-sm">Esta acción no se puede deshacer. Se eliminará toda la información del evento, incluyendo los voluntarios registrados y los datos asociados.</p>
+            </div>
+          </div>
+        </div>
+        <div id="event-to-delete-info" class="bg-gray-50 rounded-lg p-3">
+          <p class="text-sm text-gray-600 mb-1">Evento a eliminar:</p>
+          <p id="event-title-to-delete" class="font-semibold text-gray-800"></p>
+          <p id="event-date-to-delete" class="text-sm text-gray-600"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="cancel-delete-event" class="btn-cancel">Cancelar</button>
+        <button id="confirm-delete-event" class="btn-confirm bg-red-600 hover:bg-red-700 flex items-center">
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          Eliminar Evento
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Edición de Evento -->
+  <div id="edit-event-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center p-6 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-800">Editar Evento</h2>
+        <button id="close-edit-modal-btn" class="text-gray-400 hover:text-gray-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <form id="edit-event-form" class="p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Título del Evento</label>
+            <input type="text" id="edit-titulo" name="titulo" required 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
+            <select id="edit-categoria" name="categoria_id" disabled 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed">
+              <option value="">Seleccionar categoría</option>
+              <option value="1">Educación</option>
+              <option value="2">Salud</option>
+              <option value="3">Medio Ambiente</option>
+              <option value="4">Ayuda Social</option>
+              <option value="5">Cultura y Arte</option>
+              <option value="6">Deportes</option>
+              <option value="7">Tecnología</option>
+              <option value="8">Emergencias</option>
+            </select>
+            <p class="text-xs text-gray-500 mt-1">La categoría no se puede modificar</p>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+          <textarea id="edit-descripcion" name="descripcion" rows="3" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Inicio</label>
+            <input type="date" id="edit-fecha-inicio" name="fecha_inicio" required 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Hora de Inicio</label>
+            <input type="time" id="edit-hora-inicio" name="hora_inicio" required 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Fin</label>
+            <input type="date" id="edit-fecha-fin" name="fecha_fin" required 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Hora de Fin</label>
+            <input type="time" id="edit-hora-fin" name="hora_fin" required 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Dirección</label>
+            <input type="text" id="edit-direccion" name="direccion" disabled 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed">
+            <p class="text-xs text-gray-500 mt-1">La dirección no se puede modificar</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Capacidad Máxima</label>
+            <input type="number" id="edit-capacidad-maxima" name="capacidad_maxima" min="1" required 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Requisitos (opcional)</label>
+          <textarea id="edit-requisitos" name="requisitos" rows="2" placeholder="Separar cada requisito con una coma"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+        
+        <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+          <button type="button" onclick="closeEditEventModal()" 
+                  class="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" 
+                  class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            Editar Evento
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script type="module">
     const API_BASE_URL = 'http://localhost:3001/api';
     
+    const OrganizacionService = {
+      getAuthHeaders() {
+        const token = localStorage.getItem('organizacionAuthToken');
+        console.log('🔑 Token obtenido de localStorage:', token ? 'PRESENTE' : 'AUSENTE');
+        return {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        };
+      },
+
+      async getProfile() {
+        try {
+          console.log('👤 OrganizacionService.getProfile() iniciado...');
+          
+          const headers = this.getAuthHeaders();
+          console.log('👤 Headers preparados:', headers);
+          
+          const url = `${API_BASE_URL}/organizacionAuth/profile`;
+          console.log('👤 URL a llamar:', url);
+          
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: headers,
+          });
+
+          console.log('👤 Respuesta recibida:', response.status, response.statusText);
+          
+          const data = await response.json();
+          
+          console.log('📦 Datos del perfil:', data);
+          
+          if (!response.ok) {
+            throw new Error(data.message || 'Error obteniendo perfil');
+          }
+
+          return data;
+        } catch (error) {
+          console.error('❌ Error en OrganizacionService.getProfile():', error);
+          return {
+            success: false,
+            message: error instanceof Error ? error.message : 'Error de conexión con el servidor'
+          };
+        }
+      }
+    };
+
     const EventoService = {
       getAuthHeaders() {
         const token = localStorage.getItem('organizacionAuthToken');
@@ -342,6 +546,78 @@ import Layout from '../layouts/Layout.astro';
             message: error instanceof Error ? error.message : 'Error de conexión con el servidor'
           };
         }
+      },
+
+      async deleteEvento(eventoId) {
+        try {
+          console.log('🗑️ EventoService.deleteEvento() iniciado con ID:', eventoId);
+          
+          const headers = this.getAuthHeaders();
+          console.log('🗑️ Headers preparados:', headers);
+          
+          const url = `${API_BASE_URL}/eventos/${eventoId}`;
+          console.log('🗑️ URL a llamar:', url);
+          
+          const response = await fetch(url, {
+            method: 'DELETE',
+            headers: headers
+          });
+
+          console.log('🗑️ Respuesta recibida:', response.status, response.statusText);
+          
+          const data = await response.json();
+          
+          console.log('📦 Datos de respuesta:', data);
+          
+          if (!response.ok) {
+            throw new Error(data.message || 'Error eliminando evento');
+          }
+
+          return data;
+        } catch (error) {
+          console.error('❌ Error en EventoService.deleteEvento():', error);
+          return {
+            success: false,
+            message: error instanceof Error ? error.message : 'Error de conexión con el servidor'
+          };
+        }
+      },
+
+      async updateEvento(eventoId, eventoData) {
+        try {
+          console.log('📝 EventoService.updateEvento() iniciado con ID:', eventoId);
+          console.log('📝 Datos a enviar:', eventoData);
+          
+          const headers = this.getAuthHeaders();
+          console.log('📝 Headers preparados:', headers);
+          
+          const url = `${API_BASE_URL}/eventos/${eventoId}`;
+          console.log('📝 URL a llamar:', url);
+          
+          const response = await fetch(url, {
+            method: 'PUT',
+            headers: headers,
+            body: JSON.stringify(eventoData)
+          });
+
+          console.log('📝 Respuesta recibida:', response.status, response.statusText);
+          
+          const data = await response.json();
+          
+          console.log('📦 Datos de respuesta:', data);
+          
+          if (!response.ok) {
+            throw new Error(data.message || 'Error actualizando evento');
+          }
+
+          return data;
+        } catch (error) {
+          console.error('❌ Error en EventoService.updateEvento():', error);
+          return {
+            success: false,
+            message: error instanceof Error ? error.message : 'Error de conexión con el servidor'
+          };
+        }
       }
     };
 
@@ -363,6 +639,7 @@ import Layout from '../layouts/Layout.astro';
     let isModalOpen = false;
     let isLoading = false;
     let loadingTimeout = null;
+    let organizacionData = null;
 
     function getAuthToken() {
       return localStorage.getItem('organizacionAuthToken');
@@ -383,6 +660,57 @@ import Layout from '../layouts/Layout.astro';
       
       console.log('✅ Token presente, continuando...');
       return true;
+    }
+
+    async function loadProfile() {
+      try {
+        console.log('👤 Cargando perfil de la organización...');
+        
+        const response = await OrganizacionService.getProfile();
+        
+        if (response.success && response.data) {
+          organizacionData = response.data;
+          console.log('✅ Perfil cargado exitosamente:', organizacionData);
+          
+          // Actualizar el título de bienvenida
+          updateWelcomeMessage();
+        } else {
+          console.log('❌ Error cargando perfil:', response.message);
+          throw new Error(response.message || 'Error desconocido al cargar perfil');
+        }
+      } catch (error) {
+        console.error('❌ Error cargando perfil de organización:', error);
+        // Si hay error cargando el perfil, usar un mensaje genérico
+        updateWelcomeMessage('Organización');
+      }
+    }
+
+    function updateWelcomeMessage(fallbackName = null) {
+      const welcomeTitle = document.querySelector('h1.text-4xl.font-bold.text-white.mb-4');
+      if (welcomeTitle) {
+        let nombreMostrar = fallbackName;
+        
+        if (organizacionData && organizacionData.nombreRepresentante) {
+          nombreMostrar = organizacionData.nombreRepresentante;
+        }
+        
+        if (nombreMostrar) {
+          welcomeTitle.textContent = `Bienvenido ${nombreMostrar}`;
+        } else {
+          welcomeTitle.textContent = 'Bienvenido a tu Dashboard';
+        }
+        
+        console.log('🎨 Título de bienvenida actualizado:', welcomeTitle.textContent);
+      }
+
+      // También actualizar el navbar para mostrar el nombre de la organización
+      const navTitle = document.querySelector('h1.text-xl.font-bold.text-purple-600');
+      if (navTitle && organizacionData) {
+        if (organizacionData.nombre) {
+          navTitle.textContent = organizacionData.nombre;
+          console.log('🎨 Título del navbar actualizado:', navTitle.textContent);
+        }
+      }
     }
 
     function showLoadingState() {
@@ -651,6 +979,30 @@ import Layout from '../layouts/Layout.astro';
               </div>
             </div>
           ` : ''}
+
+          <!-- Botones de Acción -->
+          <div class="mt-4 pt-4 border-t border-gray-100 flex justify-end space-x-2">
+            <button 
+              onclick="editEvent(${event.id || event.evento_id})" 
+              class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              title="Editar evento"
+            >
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              Editar
+            </button>
+            <button 
+              onclick="deleteEvent(${event.id || event.evento_id})" 
+              class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              title="Eliminar evento"
+            >
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              Eliminar
+            </button>
+          </div>
         </div>
       `;
     }
@@ -929,13 +1281,268 @@ import Layout from '../layouts/Layout.astro';
       }
     }
 
+    let eventToEdit = null;
+
     function editEvent(eventId) {
       console.log('Editar evento:', eventId);
+      
+      // Encontrar el evento en la lista
+      const event = events.find(e => (e.id || e.evento_id) == eventId);
+      if (!event) {
+        console.error('Evento no encontrado:', eventId);
+        showErrorMessage('Evento no encontrado');
+        return;
+      }
+      
+      console.log('🔧 Evento a editar:', event);
+      
+      // Guardar referencia del evento a editar
+      eventToEdit = event;
+      
+      // Llenar los campos del modal con los datos del evento
+      fillEditEventForm(event);
+      
+      // Mostrar el modal
+      openEditEventModal();
     }
 
+    async function updateEvent(formData) {
+      if (!eventToEdit) {
+        console.error('No hay evento seleccionado para editar');
+        return;
+      }
+
+      const eventId = eventToEdit.id || eventToEdit.evento_id;
+      console.log('📝 Iniciando actualización del evento ID:', eventId);
+      
+      if (!checkAuth()) return;
+      
+      try {
+        // Construir las fechas completas con hora
+        const fechaInicio = `${formData.fecha_inicio}T${formData.hora_inicio}:00`;
+        const fechaFin = `${formData.fecha_fin}T${formData.hora_fin}:00`;
+        
+        const dataParaEnviar = {
+          titulo: formData.titulo,
+          descripcion: formData.descripcion,
+          fechaInicio,
+          fechaFin,
+          capacidadMaxima: parseInt(formData.capacidad_maxima) || null,
+          requisitos: formData.requisitos || ''
+        };
+        
+        console.log('📤 Datos a enviar para actualización:', dataParaEnviar);
+        
+        const response = await EventoService.updateEvento(eventId, dataParaEnviar);
+        
+        if (response.success) {
+          console.log('✅ Evento actualizado exitosamente');
+          
+          // Cerrar modal
+          closeEditEventModal();
+          
+          // Recargar eventos para mostrar los cambios
+          await loadEvents();
+          
+          showSuccessMessage('¡Evento actualizado exitosamente!');
+        } else {
+          throw new Error(response.message || 'Error desconocido al actualizar evento');
+        }
+      } catch (error) {
+        console.error('❌ Error actualizando evento:', error);
+        showErrorMessage(`Error al actualizar evento: ${error.message}`);
+      }
+    }
+
+    function fillEditEventForm(event) {
+      // Campos editables
+      document.getElementById('edit-titulo').value = event.titulo || '';
+      document.getElementById('edit-descripcion').value = event.descripcion || '';
+      
+      // Fechas - usar solo la parte de fecha
+      if (event.fechaInicio || event.fecha_inicio) {
+        const fechaInicio = new Date(event.fechaInicio || event.fecha_inicio);
+        document.getElementById('edit-fecha-inicio').value = fechaInicio.toISOString().split('T')[0];
+      }
+      
+      if (event.fechaFin || event.fecha_fin) {
+        const fechaFin = new Date(event.fechaFin || event.fecha_fin);
+        document.getElementById('edit-fecha-fin').value = fechaFin.toISOString().split('T')[0];
+      }
+
+      // Horas - usar los campos separados de hora de la base de datos
+      if (event.horaInicio || event.hora_inicio) {
+        document.getElementById('edit-hora-inicio').value = event.horaInicio || event.hora_inicio;
+      }
+      
+      if (event.horaFin || event.hora_fin) {
+        document.getElementById('edit-hora-fin').value = event.horaFin || event.hora_fin;
+      }
+      
+      document.getElementById('edit-capacidad-maxima').value = event.capacidadMaxima || event.capacidad_maxima || '';
+      
+      // Requisitos - manejar diferentes formatos
+      let requisitosTexto = '';
+      if (event.requisitos) {
+        if (Array.isArray(event.requisitos)) {
+          requisitosTexto = event.requisitos.join(', ');
+        } else if (typeof event.requisitos === 'string') {
+          requisitosTexto = event.requisitos
+            .replace(/^\{+/, '')
+            .replace(/\}+$/, '')
+            .replace(/["']/g, '')
+            .trim();
+        }
+      }
+      document.getElementById('edit-requisitos').value = requisitosTexto;
+      
+      // Campos no editables (solo para mostrar)
+      document.getElementById('edit-categoria').value = event.categoria_id || '';
+      document.getElementById('edit-direccion').value = event.ubicacion || event.direccion || '';
+    }
+
+    function openEditEventModal() {
+      const modal = document.getElementById('edit-event-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeEditEventModal() {
+      const modal = document.getElementById('edit-event-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = '';
+      }
+      
+      // Limpiar el formulario
+      const form = document.getElementById('edit-event-form');
+      if (form) {
+        form.reset();
+      }
+    }
+
+    let eventToDelete = null;
+
     function deleteEvent(eventId) {
-      if (confirm('¿Estás seguro de que quieres eliminar este evento?')) {
-        console.log('Eliminar evento:', eventId);
+      console.log('Solicitud de eliminar evento:', eventId);
+      
+      // Encontrar el evento en la lista
+      const event = events.find(e => (e.id || e.evento_id) == eventId);
+      if (!event) {
+        console.error('Evento no encontrado:', eventId);
+        showErrorMessage('Evento no encontrado');
+        return;
+      }
+      
+      // Guardar referencia del evento a eliminar
+      eventToDelete = event;
+      
+      // Mostrar información del evento en el modal
+      const titleElement = document.getElementById('event-title-to-delete');
+      const dateElement = document.getElementById('event-date-to-delete');
+      
+      if (titleElement) {
+        titleElement.textContent = event.titulo || 'Sin título';
+      }
+      
+      if (dateElement) {
+        const startDate = formatDate(event.fechaInicio || event.fecha_inicio);
+        const endDate = formatDate(event.fechaFin || event.fecha_fin);
+        dateElement.textContent = `${startDate} - ${endDate}`;
+      }
+      
+      // Mostrar el modal
+      showDeleteEventModal();
+    }
+
+    function showDeleteEventModal() {
+      const modal = document.getElementById('delete-event-modal');
+      if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function hideDeleteEventModal() {
+      const modal = document.getElementById('delete-event-modal');
+      if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
+      eventToDelete = null;
+    }
+
+    async function confirmDeleteEvent() {
+      if (!eventToDelete) {
+        console.error('No hay evento seleccionado para eliminar');
+        return;
+      }
+      
+      const eventId = eventToDelete.id || eventToDelete.evento_id;
+      console.log('Confirmando eliminación del evento:', eventId);
+      
+      // Deshabilitar el botón de confirmar
+      const confirmBtn = document.getElementById('confirm-delete-event');
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = `
+          <svg class="w-4 h-4 mr-1 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12a8 8 0 01.09-1.17A8 8 0 018 4a8 8 0 01.17-.09A8 8 0 0112 4a8 8 0 01.17.09A8 8 0 0120 12a8 8 0 01-.09 1.17A8 8 0 0116 20a8 8 0 01-.17.09A8 8 0 0112 20a8 8 0 01-.17-.09A8 8 0 014 12z"></path>
+          </svg>
+          Eliminando...
+        `;
+      }
+      
+      try {
+        // Llamar al backend para eliminar el evento
+        console.log('🗑️ Iniciando eliminación del evento ID:', eventId);
+        const response = await EventoService.deleteEvento(eventId);
+        
+        console.log('🗑️ Respuesta del servidor:', response);
+        
+        if (!response.success) {
+          throw new Error(response.message || 'Error eliminando evento');
+        }
+        
+        // Eliminar el evento de la lista local
+        const eventIndex = events.findIndex(e => (e.id || e.evento_id) == eventId);
+        if (eventIndex !== -1) {
+          events.splice(eventIndex, 1);
+          console.log('✅ Evento eliminado de la lista local');
+        }
+        
+        // Cerrar modal
+        hideDeleteEventModal();
+        
+        // Actualizar la vista
+        renderEvents();
+        updateStats();
+        
+        // Mostrar mensaje de éxito
+        const mensaje = response.data?.voluntariosAfectados > 0 
+          ? `Evento eliminado exitosamente. Se desregistraron ${response.data.voluntariosAfectados} voluntarios.`
+          : 'Evento eliminado exitosamente';
+          
+        showSuccessMessage(mensaje);
+        
+      } catch (error) {
+        console.error('❌ Error eliminando evento:', error);
+        showErrorMessage(`Error al eliminar evento: ${error.message}`);
+      } finally {
+        // Restaurar el botón
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.innerHTML = `
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            Eliminar Evento
+          `;
+        }
       }
     }
 
@@ -954,6 +1561,10 @@ import Layout from '../layouts/Layout.astro';
       }
 
       console.log('✅ Autenticación exitosa, continuando con la carga...');
+
+      // Cargar perfil de la organización primero
+      console.log('👤 Iniciando carga del perfil...');
+      loadProfile();
 
       console.log('📅 Iniciando carga de eventos...');
       loadEvents();
@@ -1006,6 +1617,124 @@ import Layout from '../layouts/Layout.astro';
           await createEvent(eventData);
         });
       }
+
+      // Configurar modal de eliminación de eventos
+      const cancelDeleteBtn = document.getElementById('cancel-delete-event');
+      const confirmDeleteBtn = document.getElementById('confirm-delete-event');
+      const deleteModal = document.getElementById('delete-event-modal');
+
+      if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Eliminación cancelada');
+          hideDeleteEventModal();
+        });
+      }
+
+      if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Eliminación confirmada');
+          confirmDeleteEvent();
+        });
+      }
+
+      // Cerrar modal de eliminación al hacer clic fuera
+      if (deleteModal) {
+        deleteModal.addEventListener('click', function(e) {
+          if (e.target === deleteModal) {
+            hideDeleteEventModal();
+          }
+        });
+      }
+
+      // Cerrar modal de eliminación con escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && deleteModal && deleteModal.classList.contains('show')) {
+          hideDeleteEventModal();
+        }
+      });
+
+      // Configurar modal de edición de eventos
+      const closeEditBtn = document.getElementById('close-edit-modal-btn');
+      const editModal = document.getElementById('edit-event-modal');
+      const editForm = document.getElementById('edit-event-form');
+
+      if (closeEditBtn) {
+        closeEditBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          closeEditEventModal();
+        });
+      }
+
+      if (editModal) {
+        editModal.addEventListener('click', function(e) {
+          if (e.target === editModal) {
+            closeEditEventModal();
+          }
+        });
+      }
+
+      if (editForm) {
+        editForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          console.log('📝 Formulario de edición enviado');
+          
+          // Deshabilitar el botón de envío
+          const submitBtn = editForm.querySelector('button[type="submit"]');
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+              <svg class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12a8 8 0 01.09-1.17A8 8 0 018 4a8 8 0 01.17-.09A8 8 0 0112 4a8 8 0 01.17.09A8 8 0 0120 12a8 8 0 01-.09 1.17A8 8 0 0116 20a8 8 0 01-.17.09A8 8 0 0112 20a8 8 0 01-.17-.09A8 8 0 014 12z"></path>
+              </svg>
+              Actualizando...
+            `;
+          }
+          
+          try {
+            // Recoger datos del formulario
+            const formData = new FormData(editForm);
+            const eventData = {
+              titulo: formData.get('titulo'),
+              descripcion: formData.get('descripcion'),
+              fecha_inicio: formData.get('fecha_inicio'),
+              hora_inicio: formData.get('hora_inicio'),
+              fecha_fin: formData.get('fecha_fin'),
+              hora_fin: formData.get('hora_fin'),
+              capacidad_maxima: formData.get('capacidad_maxima'),
+              requisitos: formData.get('requisitos')
+            };
+            
+            console.log('📋 Datos del formulario recolectados:', eventData);
+            
+            // Llamar a la función de actualización
+            await updateEvent(eventData);
+            
+          } catch (error) {
+            console.error('❌ Error en el submit del formulario:', error);
+            showErrorMessage(`Error al procesar formulario: ${error.message}`);
+          } finally {
+            // Restaurar el botón
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = `
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                Editar Evento
+              `;
+            }
+          }
+        });
+      }
+
+      // Cerrar modal de edición con escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && editModal && !editModal.classList.contains('hidden')) {
+          closeEditEventModal();
+        }
+      });
       
       console.log('🎉 Dashboard completamente cargado');
     });
@@ -1015,6 +1744,264 @@ import Layout from '../layouts/Layout.astro';
     window.openEventModal = openEventModal;
     window.closeEventModal = closeEventModal;
     window.editEvent = editEvent;
+    window.openEditEventModal = openEditEventModal;
+    window.closeEditEventModal = closeEditEventModal;
     window.deleteEvent = deleteEvent;
+    window.showDeleteEventModal = showDeleteEventModal;
+    window.hideDeleteEventModal = hideDeleteEventModal;
+    window.confirmDeleteEvent = confirmDeleteEvent;
+
+    // Logout Modal Functions
+    function showLogoutModal() {
+      const modal = document.getElementById('logout-modal');
+      if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function hideLogoutModal() {
+      const modal = document.getElementById('logout-modal');
+      if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
+    }
+
+    function performLogout() {
+      console.log('Performing organization logout...');
+      
+      // Deshabilitar el botón de confirmar
+      const confirmBtn = document.getElementById('confirm-logout');
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Cerrando...';
+      }
+
+      // Intentar logout en el backend (sin esperar respuesta)
+      const token = localStorage.getItem('organizationAuthToken') || localStorage.getItem('authToken');
+      if (token) {
+        fetch('http://localhost:3001/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }).catch(err => console.log('Backend logout error (ignored):', err));
+      }
+      
+      // Limpiar datos y redirigir
+      setTimeout(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+        console.log('Redirecting to organization login...');
+        window.location.replace('/login-organizacion');
+      }, 500);
+    }
+
+    function initLogoutButton() {
+      console.log('Initializing organization logout button...');
+      
+      const logoutBtn = document.getElementById('logout-btn');
+      const cancelBtn = document.getElementById('cancel-logout');
+      const confirmBtn = document.getElementById('confirm-logout');
+      const modal = document.getElementById('logout-modal');
+      
+      console.log('Logout button found:', logoutBtn);
+      
+      if (logoutBtn && !logoutBtn.hasAttribute('data-logout-initialized')) {
+        console.log('Setting up logout button event listener');
+        logoutBtn.setAttribute('data-logout-initialized', 'true');
+        
+        // Evento para abrir el modal
+        logoutBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Logout button clicked - showing modal');
+          showLogoutModal();
+        });
+
+        // Evento para cancelar
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Logout canceled');
+            hideLogoutModal();
+          });
+        }
+
+        // Evento para confirmar
+        if (confirmBtn) {
+          confirmBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Logout confirmed');
+            performLogout();
+          });
+        }
+
+        // Cerrar modal al hacer clic fuera
+        if (modal) {
+          modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+              hideLogoutModal();
+            }
+          });
+        }
+
+        // Cerrar modal con escape
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && modal && modal.classList.contains('show')) {
+            hideLogoutModal();
+          }
+        });
+
+        return true;
+      }
+      
+      return false;
+    }
+
+    // Initialize logout functionality
+    const logoutObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1) {
+              const logoutBtn = node.id === 'logout-btn' ? node : node.querySelector('#logout-btn');
+              if (logoutBtn) {
+                console.log('🔍 Logout button detected via MutationObserver');
+                const success = initLogoutButton();
+                if (success) {
+                  console.log('✅ Logout button initialized successfully');
+                }
+              }
+            }
+          });
+        }
+      });
+    });
+
+    // Configurar el observer
+    logoutObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    // Intentar inicializar inmediatamente
+    setTimeout(() => {
+      console.log('🚀 Attempting immediate logout button initialization');
+      initLogoutButton();
+    }, 100);
+  </script>
+
+<style>
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 1rem;
+    padding: 0;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.3s ease;
+  }
+
+  .modal-overlay.show .modal-content {
+    transform: scale(1) translateY(0);
+  }
+
+  .modal-header {
+    padding: 1.5rem 1.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .modal-header h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-body p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .modal-footer {
+    padding: 1rem 1.5rem 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+  }
+
+  .btn-cancel {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+  }
+
+  .btn-cancel:hover {
+    background: #e5e7eb;
+    transform: translateY(-1px);
+  }
+
+  .btn-confirm {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-confirm:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+  }
+
+  .btn-confirm:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+</style>
   </script>
 </Layout>

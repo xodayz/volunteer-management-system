@@ -30,7 +30,7 @@ class OrganizacionAuthServiceClass {
 
   async login(loginData: OrganizacionLoginData): Promise<OrganizacionApiResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/organizacion/login`, {
+      const response = await fetch(`${this.baseUrl}/organizacionAuth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ class OrganizacionAuthServiceClass {
 
   async register(registerData: OrganizacionRegisterData): Promise<OrganizacionApiResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/organizacion/register`, {
+      const response = await fetch(`${this.baseUrl}/organizacionAuth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ class OrganizacionAuthServiceClass {
         };
       }
 
-      const response = await fetch(`${this.baseUrl}/organizacion/profile`, {
+      const response = await fetch(`${this.baseUrl}/organizacionAuth/profile`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -141,7 +141,7 @@ class OrganizacionAuthServiceClass {
       const token = localStorage.getItem('organizacionAuthToken');
       
       if (token) {
-        await fetch(`${this.baseUrl}/organizacion/logout`, {
+        await fetch(`${this.baseUrl}/organizacionAuth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -182,7 +182,7 @@ class OrganizacionAuthServiceClass {
         };
       }
 
-      const response = await fetch(`${this.baseUrl}/organizacion/verify-token`, {
+      const response = await fetch(`${this.baseUrl}/organizacionAuth/verify-token`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

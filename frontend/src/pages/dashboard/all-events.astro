@@ -1,0 +1,2236 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProtectedRoute from '../../components/ProtectedRoute';
+---
+
+<Layout>
+  <ProtectedRoute client:load>
+    <div class="events-page">
+      <!-- Navbar -->
+      <nav class="dashboard-nav">
+        <div class="nav-content">
+          <div class="nav-brand">
+            <h2>Sistema Voluntariado</h2>
+          </div>
+          <div class="nav-links">
+            <a href="/dashboard" class="nav-link">Inicio</a>
+            <a href="/dashboard/all-events" class="nav-link active">Eventos</a>
+            <button id="logout-btn" class="logout-btn">Cerrar Sesión</button>
+          </div>
+        </div>
+      </nav>
+
+      <div class="events-content">
+        <header class="events-header">
+          <h1>Eventos Disponibles</h1>
+          <p id="events-subtitle">Encuentra eventos para participar como voluntario</p>
+        </header>
+
+        <!-- Search and Filter Section -->
+        <div class="search-filter-section">
+          <div class="search-container">
+            <input 
+              type="text" 
+              id="search-input" 
+              placeholder="Buscar eventos por nombre..." 
+              class="search-input"
+            >
+            <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+            </svg>
+          </div>
+          
+          <div class="filter-container">
+            <select id="category-filter" class="category-select">
+              <option value="">Todas las categorías</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Events Cards -->
+        <div class="events-container">
+          <!-- Skeleton Loader -->
+          <div id="skeleton-loader" class="skeleton-loader" style="display: none;">
+            <div class="skeleton-card">
+              <div class="skeleton-header">
+                <div class="skeleton-title"></div>
+                <div class="skeleton-badge"></div>
+              </div>
+              <div class="skeleton-description"></div>
+              <div class="skeleton-description short"></div>
+              <div class="skeleton-details">
+                <div class="skeleton-detail"></div>
+                <div class="skeleton-detail"></div>
+                <div class="skeleton-detail"></div>
+                <div class="skeleton-detail"></div>
+              </div>
+              <div class="skeleton-participants"></div>
+              <div class="skeleton-footer">
+                <div class="skeleton-category"></div>
+                <div class="skeleton-button"></div>
+              </div>
+            </div>
+            <div class="skeleton-card">
+              <div class="skeleton-header">
+                <div class="skeleton-title"></div>
+                <div class="skeleton-badge"></div>
+              </div>
+              <div class="skeleton-description"></div>
+              <div class="skeleton-description short"></div>
+              <div class="skeleton-details">
+                <div class="skeleton-detail"></div>
+                <div class="skeleton-detail"></div>
+                <div class="skeleton-detail"></div>
+                <div class="skeleton-detail"></div>
+              </div>
+              <div class="skeleton-participants"></div>
+              <div class="skeleton-footer">
+                <div class="skeleton-category"></div>
+                <div class="skeleton-button"></div>
+              </div>
+            </div>
+            <div class="skeleton-card">
+              <div class="skeleton-header">
+                <div class="skeleton-title"></div>
+                <div class="skeleton-badge"></div>
+              </div>
+              <div class="skeleton-description"></div>
+              <div class="skeleton-description short"></div>
+              <div class="skeleton-details">
+                <div class="skeleton-detail"></div>
+                <div class="skeleton-detail"></div>
+                <div class="skeleton-detail"></div>
+                <div class="skeleton-detail"></div>
+              </div>
+              <div class="skeleton-participants"></div>
+              <div class="skeleton-footer">
+                <div class="skeleton-category"></div>
+                <div class="skeleton-button"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Eventos Section -->
+          <div class="bg-white/95 backdrop-blur-xl rounded-xl p-6 border border-white/20">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-semibold text-gray-800">Eventos Disponibles</h2>
+            </div>
+            
+            <div id="eventos-container">
+              <!-- Los eventos se cargarán aquí dinámicamente -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Inscripción -->
+    <div id="registration-modal" class="modal-overlay">
+      <div class="modal-content registration-modal">
+        <div class="modal-header">
+          <h3>Confirmar Inscripción</h3>
+          <button id="close-registration-modal" class="close-modal-btn">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="modal-body registration-modal-body">
+          <div class="event-info-section">
+            <h4 id="modal-event-title" class="event-modal-title">Título del Evento</h4>
+            <p id="modal-event-description" class="event-modal-description">Descripción del evento...</p>
+            
+            <div class="event-details-modal">
+              <div class="detail-item">
+                <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <div class="detail-content">
+                  <span class="detail-label">Ubicación:</span>
+                  <span id="modal-event-location" class="detail-value">Ubicación del evento</span>
+                </div>
+              </div>
+              
+              <div class="detail-item">
+                <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <div class="detail-content">
+                  <span class="detail-label">Fecha y Hora:</span>
+                  <span id="modal-event-datetime" class="detail-value">Fecha y hora del evento</span>
+                </div>
+              </div>
+              
+              <div class="detail-item">
+                <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                <div class="detail-content">
+                  <span class="detail-label">Participantes:</span>
+                  <span id="modal-event-participants" class="detail-value">Participantes del evento</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="registration-notice">
+              <svg class="notice-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <p>¿Estás seguro de que quieres inscribirte a este evento?</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button id="cancel-registration" class="btn-cancel">Cancelar</button>
+          <button id="confirm-registration" class="btn-confirm">Confirmar Inscripción</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Inscripción Exitosa -->
+    <div id="success-modal" class="modal-overlay">
+      <div class="modal-content success-modal">
+        <div class="modal-body">
+          <div class="success-icon-container">
+            <svg class="success-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h3 class="success-title">¡Inscripción Exitosa!</h3>
+          <p class="success-message">Te has inscrito al evento correctamente. Recibirás más información por correo electrónico.</p>
+          <button id="close-success-modal" class="btn-success">Continuar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Logout -->
+    <div id="logout-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Cerrar Sesión</h3>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que deseas cerrar sesión?</p>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-logout" class="btn-secondary">Cancelar</button>
+          <button id="confirm-logout" class="btn-primary">Cerrar Sesión</button>
+        </div>
+      </div>
+    </div>
+  </ProtectedRoute>
+</Layout>
+
+<style>
+  /* ===== MAIN LAYOUT ===== */
+  .events-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  /* ===== NAVBAR STYLES ===== */
+  .dashboard-nav {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .nav-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-brand h2 {
+    color: #4f46e5;
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .nav-link {
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: #4f46e5;
+    background: rgba(79, 70, 229, 0.1);
+  }
+
+  .logout-btn {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+  }
+
+  .logout-btn:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+  }
+
+  /* ===== EVENTS CONTENT ===== */
+  .events-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  .events-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+  }
+
+  .events-header h1 {
+    color: white;
+    font-size: clamp(1.875rem, 4vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .events-header p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    margin: 0;
+  }
+
+  /* ===== SEARCH AND FILTER SECTION ===== */
+  .search-filter-section {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 0 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .search-container {
+    position: relative;
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #6b7280;
+  }
+
+  .filter-container {
+    min-width: 200px;
+  }
+
+  .category-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .category-select:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+
+  /* ===== SKELETON LOADER ===== */
+  .skeleton-loader {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 1.5rem;
+    margin: 0 0.5rem;
+  }
+
+  .skeleton-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .skeleton-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .skeleton-title {
+    height: 1.5rem;
+    width: 70%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 0.375rem;
+  }
+
+  .skeleton-badge {
+    height: 1.5rem;
+    width: 4rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 9999px;
+  }
+
+  .skeleton-description {
+    height: 1rem;
+    width: 100%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .skeleton-description.short {
+    width: 60%;
+    margin-bottom: 1.5rem;
+  }
+
+  .skeleton-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .skeleton-detail {
+    height: 3rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 0.375rem;
+  }
+
+  .skeleton-participants {
+    height: 2.5rem;
+    background: linear-gradient(90deg, #f8fafc 25%, #f1f5f9 50%, #f8fafc 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .skeleton-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .skeleton-category {
+    height: 1.5rem;
+    width: 5rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 9999px;
+  }
+
+  .skeleton-button {
+    height: 2.5rem;
+    width: 7rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 0.5rem;
+  }
+
+  @keyframes skeleton-loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* ===== EVENTS CARDS CONTAINER ===== */
+  .events-container {
+    margin: 0 0.5rem;
+  }
+
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* ===== EVENT CARD STYLES ===== */
+  .event-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .event-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .event-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .event-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.3;
+  }
+
+  .event-status-badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .status-open {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    color: #15803d;
+  }
+
+  .status-full {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #dc2626;
+  }
+
+  .status-closed {
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    color: #374151;
+  }
+
+  .event-description {
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .event-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .event-detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .event-detail-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    color: #6b7280;
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+  }
+
+  .event-detail-content {
+    flex: 1;
+  }
+
+  .event-detail-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+
+  .event-detail-value {
+    font-size: 0.875rem;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .event-participants {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    background: rgba(248, 250, 252, 0.7);
+    border-radius: 0.75rem;
+  }
+
+  .participants-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    color: #6b7280;
+  }
+
+  .participants-text {
+    font-size: 0.875rem;
+    color: #374151;
+  }
+
+  .participants-count {
+    font-weight: 600;
+    color: #059669;
+  }
+
+  .participants-total {
+    color: #6b7280;
+  }
+
+  .participants-available {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-left: auto;
+  }
+
+  .event-requirements {
+    margin-bottom: 1.5rem;
+  }
+
+  .requirements-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .requirements-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .requirement-tag {
+    padding: 0.25rem 0.75rem;
+    background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+    color: #6d28d9;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .event-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .event-category {
+    padding: 0.375rem 0.75rem;
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    color: #15803d;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .event-action-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-register {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+  }
+
+  .btn-register:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+  }
+
+  .btn-disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .action-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* ===== LOADING AND EMPTY STATES ===== */
+  .loading-state,
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 1rem;
+    margin: 0 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid rgba(79, 70, 229, 0.2);
+    border-top: 3px solid #4f46e5;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  .empty-icon {
+    width: 3rem;
+    height: 3rem;
+    color: #9ca3af;
+    margin: 0 auto 1rem;
+  }
+
+  .empty-state h3 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .empty-state p {
+    color: #6b7280;
+    margin: 0;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* ===== MODAL STYLES ===== */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .modal-overlay.show,
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 1rem;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+  }
+
+  .modal-overlay.show .modal-content {
+    transform: translateY(0);
+  }
+
+  .modal-header {
+    padding: 1.5rem 1.5rem 0;
+  }
+
+  .modal-header h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .modal-body {
+    padding: 1rem 1.5rem;
+  }
+
+  .modal-body p {
+    margin: 0;
+    color: #6b7280;
+    line-height: 1.5;
+  }
+
+  .modal-footer {
+    padding: 0 1.5rem 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+  }
+
+  .btn-secondary,
+  .btn-primary {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  .btn-secondary:hover {
+    background: #d1d5db;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+  }
+
+  /* ===== REGISTRATION MODAL STYLES ===== */
+  .registration-modal {
+    max-width: 500px;
+    width: 90%;
+  }
+
+  .registration-modal-body {
+    padding: 0;
+  }
+
+  .event-info-section {
+    padding: 1.5rem;
+  }
+
+  .event-modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+  }
+
+  .event-modal-description {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .event-details-modal {
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e5e7eb;
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .detail-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .detail-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #6b7280;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+
+  .detail-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .detail-label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+  }
+
+  .detail-value {
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .registration-notice {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .notice-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #d97706;
+    flex-shrink: 0;
+  }
+
+  .registration-notice p {
+    margin: 0;
+    color: #92400e;
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+
+  .close-modal-btn {
+    background: none;
+    border: none;
+    padding: 0.25rem;
+    cursor: pointer;
+    color: #6b7280;
+    transition: color 0.2s ease;
+    border-radius: 0.25rem;
+  }
+
+  .close-modal-btn:hover {
+    color: #374151;
+    background: #f3f4f6;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 0;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-cancel {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+  }
+
+  .btn-cancel:hover {
+    background: #e5e7eb;
+    transform: translateY(-1px);
+  }
+
+  .btn-confirm {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    color: white;
+    box-shadow: 0 2px 10px rgba(124, 58, 237, 0.3);
+  }
+
+  .btn-confirm:hover {
+    background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+  }
+
+  .btn-confirm:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ===== SUCCESS MODAL STYLES ===== */
+  .success-modal {
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+  }
+
+  .success-icon-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .success-icon {
+    width: 4rem;
+    height: 4rem;
+    color: #10b981;
+    background: #ecfdf5;
+    border-radius: 50%;
+    padding: 0.75rem;
+    animation: successPulse 0.6s ease-out;
+  }
+
+  @keyframes successPulse {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .success-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #065f46;
+    margin-bottom: 1rem;
+  }
+
+  .success-message {
+    color: #6b7280;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+  }
+
+  .btn-success:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+  }
+
+  /* ===== RESPONSIVE DESIGN ===== */
+  @media (max-width: 768px) {
+    .nav-content {
+      padding: 1rem;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .nav-links {
+      gap: 1rem;
+    }
+
+    .events-content {
+      padding: 1rem;
+    }
+
+    .events-header h1 {
+      font-size: 2rem;
+    }
+
+    .search-filter-section {
+      flex-direction: column;
+      padding: 0;
+    }
+
+    .search-container,
+    .filter-container {
+      min-width: auto;
+    }
+
+    .events-container {
+      margin: 0;
+    }
+
+    .events-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .event-card {
+      padding: 1rem;
+    }
+
+    .event-details {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .event-footer {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+    }
+
+    .event-action-btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .modal-content {
+      margin: 1rem;
+    }
+
+    .loading-state,
+    .empty-state {
+      margin: 0;
+      padding: 2rem 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .events-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .event-card {
+      padding: 1rem;
+    }
+    
+    .event-title {
+      font-size: 1.125rem;
+    }
+    
+    .event-card-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+  }
+</style>
+
+<script>
+  const API_BASE_URL = 'http://localhost:3001/api';
+  let allEvents = [];
+  let allCategories = [];
+  let filteredEvents = [];
+  let currentEventId = null; // Para almacenar el ID del evento en el modal
+  let userRegistrations = {}; // Para almacenar el estado de inscripción del usuario por evento
+
+  // Hacer variables disponibles globalmente para funciones onclick
+  (window as any).allEvents = allEvents;
+  (window as any).allCategories = allCategories;
+  (window as any).filteredEvents = filteredEvents;
+  (window as any).currentEventId = currentEventId;
+  (window as any).userRegistrations = userRegistrations;
+
+  // ===== SERVICIOS API =====
+  const EventsService = {
+    getAuthHeaders() {
+      const token = localStorage.getItem('authToken');
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+    },
+
+    async getAllEvents() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/eventos/all`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.message || 'Error obteniendo eventos');
+        }
+
+        return data;
+      } catch (error) {
+        console.error('❌ Error en EventsService.getAllEvents():', error);
+        return {
+          success: false,
+          message: error instanceof Error ? error.message : 'Error de conexión con el servidor'
+        };
+      }
+    },
+
+    async getCategories() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/eventos/categorias`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.message || 'Error obteniendo categorías');
+        }
+
+        return data;
+      } catch (error) {
+        console.error('❌ Error en EventsService.getCategories():', error);
+        return {
+          success: false,
+          message: error instanceof Error ? error.message : 'Error de conexión con el servidor'
+        };
+      }
+    },
+
+    async registerToEvent(eventId) {
+      try {
+        console.log('🚀 Enviando inscripción al evento:', eventId);
+        
+        const response = await fetch(`${API_BASE_URL}/eventos/${eventId}/register`, {
+          method: 'POST',
+          headers: this.getAuthHeaders()
+        });
+
+        const data = await response.json();
+        console.log('📡 Respuesta del servidor:', data);
+
+        if (!response.ok) {
+          throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        }
+
+        return data;
+      } catch (error) {
+        console.error('❌ Error registering to event:', error);
+        return { 
+          success: false, 
+          message: error.message || 'Error al inscribirse al evento'
+        };
+      }
+    },
+
+    async checkUserRegistration(eventId) {
+      try {
+        console.log('🔍 Verificando inscripción del usuario en evento:', eventId);
+        
+        const token = localStorage.getItem('authToken');
+        console.log('🔑 Token disponible:', token ? 'SÍ' : 'NO');
+        console.log('🔑 Primeros 20 caracteres del token:', token ? token.substring(0, 20) + '...' : 'N/A');
+        
+        const headers = this.getAuthHeaders();
+        console.log('📡 Headers a enviar:', headers);
+        
+        const response = await fetch(`${API_BASE_URL}/eventos/${eventId}/check-registration`, {
+          method: 'GET',
+          headers: headers
+        });
+
+        console.log('📡 Response status:', response.status);
+        console.log('📡 Response ok:', response.ok);
+
+        const data = await response.json();
+        console.log('📡 Estado de inscripción:', data);
+
+        if (!response.ok) {
+          throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        }
+
+        return data;
+      } catch (error) {
+        console.error('❌ Error checking registration:', error);
+        return { 
+          success: false, 
+          isRegistered: false,
+          message: error.message || 'Error al verificar la inscripción'
+        };
+      }
+    }
+  };
+
+  // ===== FUNCIONES DE CARGA DE DATOS =====
+  async function loadCategories() {
+    try {
+      console.log('📂 Cargando categorías...');
+      const response = await EventsService.getCategories();
+      
+      if (response.success && response.categorias) {
+        allCategories = response.categorias;
+        
+        // Actualizar variable global
+        (window as any).allCategories = allCategories;
+        
+        populateCategories();
+        console.log('✅ Categorías cargadas:', allCategories);
+      } else {
+        console.error('❌ Error cargando categorías:', response.message);
+      }
+    } catch (error) {
+      console.error('❌ Error cargando categorías:', error);
+    }
+  }
+
+  async function loadEvents() {
+    try {
+      console.log('📅 Cargando eventos...');
+      showLoadingState();
+      
+      const response = await EventsService.getAllEvents();
+      
+      if (response.success && response.data) {
+        allEvents = response.data;
+        filteredEvents = [...allEvents];
+        
+        // Actualizar variables globales
+        (window as any).allEvents = allEvents;
+        (window as any).filteredEvents = filteredEvents;
+        
+        // Cargar estados de inscripción del usuario
+        await loadUserRegistrations();
+        
+        renderEvents();
+        console.log('✅ Eventos cargados:', allEvents);
+      } else {
+        console.error('❌ Error cargando eventos:', response.message);
+        showEmptyState();
+      }
+    } catch (error) {
+      console.error('❌ Error cargando eventos:', error);
+      showEmptyState();
+    }
+  }
+
+  async function loadUserRegistrations() {
+    try {
+      console.log('🔍 Verificando inscripciones del usuario...');
+      userRegistrations = {};
+      
+      // Solo verificar inscripciones si el usuario está autenticado
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.log('❌ Usuario no autenticado, saltando verificación de inscripciones');
+        return;
+      }
+
+      console.log('👤 Usuario autenticado, verificando inscripciones para', allEvents.length, 'eventos');
+
+      // Verificar inscripción para cada evento
+      for (const event of allEvents) {
+        try {
+          console.log(`🔎 Verificando inscripción para evento ${event.id_evento}: ${event.nombre}`);
+          const result = await EventsService.checkUserRegistration(event.id_evento);
+          console.log(`📋 Resultado para evento ${event.id_evento}:`, result);
+          
+          if (result.success) {
+            userRegistrations[event.id_evento] = result.isRegistered;
+            console.log(`✅ Evento ${event.id_evento}: ${result.isRegistered ? 'INSCRITO' : 'NO INSCRITO'}`);
+          } else {
+            userRegistrations[event.id_evento] = false;
+            console.log(`❌ Error verificando evento ${event.id_evento}:`, result.message);
+          }
+        } catch (error) {
+          console.error(`❌ Excepción verificando inscripción para evento ${event.id_evento}:`, error);
+          userRegistrations[event.id_evento] = false;
+        }
+      }
+      
+      // Actualizar variable global
+      (window as any).userRegistrations = userRegistrations;
+      
+      console.log('✅ Estados de inscripción finales:', userRegistrations);
+      console.log('🔄 Re-renderizando eventos con nuevos estados...');
+    } catch (error) {
+      console.error('❌ Error cargando estados de inscripción:', error);
+    }
+  }
+
+  // ===== FUNCIONES DE RENDERIZADO =====
+  function populateCategories() {
+    const categorySelect = document.getElementById('category-filter');
+    if (categorySelect && allCategories.length > 0) {
+      // Limpiar opciones existentes (excepto "Todas las categorías")
+      categorySelect.innerHTML = '<option value="">Todas las categorías</option>';
+      
+      // Agregar categorías
+      allCategories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category.id_categoria;
+        option.textContent = category.nombre;
+        categorySelect.appendChild(option);
+      });
+    }
+  }
+
+  function renderEvents() {
+    console.log('🎨 renderEvents() iniciado');
+    console.log('🎨 filteredEvents:', filteredEvents);
+    console.log('🎨 allCategories:', allCategories);
+    
+    const container = document.getElementById('eventos-container');
+    if (!container) {
+      console.error('❌ No se encontró el elemento eventos-container');
+      return;
+    }
+
+    // Ocultar skeleton loader
+    hideSkeletonLoader();
+
+    // Si no hay eventos filtrados
+    if (filteredEvents.length === 0) {
+      console.log('🎨 No hay eventos filtrados, mostrando estado vacío');
+      container.innerHTML = `
+        <div class="text-center py-8">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No hay eventos disponibles</h3>
+          <p class="mt-1 text-sm text-gray-500">No se encontraron eventos que coincidan con tu búsqueda.</p>
+        </div>
+      `;
+      return;
+    }
+
+    console.log('🎨 Renderizando', filteredEvents.length, 'eventos');
+
+    // Renderizar eventos como tarjetas usando el mismo patrón del dashboard de organizaciones
+    container.innerHTML = `
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        ${filteredEvents.map((event, index) => createEventCard(event, index)).join('')}
+      </div>
+    `;
+
+    console.log('✅ Eventos renderizados exitosamente');
+  }
+
+  function createEventCard(event, index) {
+    try {
+      console.log(`🎨 Procesando evento ${index + 1}:`, event.nombre);
+      
+      const fechaInicio = new Date(event.fecha_inicio);
+      const fechaFin = new Date(event.fecha_fin);
+      const categoria = allCategories.find(cat => cat.id_categoria === event.id_categoria);
+      
+      // Validar que las fechas sean válidas
+      if (isNaN(fechaInicio.getTime()) || isNaN(fechaFin.getTime())) {
+        console.error('Fechas inválidas para evento:', event.nombre);
+        return '';
+      }
+      
+      // Determinar estado del evento
+      const status = getEventStatus(event.fecha_inicio, event.fecha_fin);
+      const statusClass = getStatusClass(status.color);
+      
+      // Formatear fechas
+      const fechaInicioStr = formatDate(event.fecha_inicio);
+      const fechaFinStr = formatDate(event.fecha_fin);
+      
+      // Procesar requisitos
+      let requisitosArray = [];
+      if (event.requisitos) {
+        try {
+          if (Array.isArray(event.requisitos)) {
+            requisitosArray = event.requisitos;
+          } else if (typeof event.requisitos === 'string') {
+            try {
+              const parsed = JSON.parse(event.requisitos);
+              if (Array.isArray(parsed)) {
+                requisitosArray = parsed;
+              } else {
+                requisitosArray = [parsed];
+              }
+            } catch (jsonError) {
+              requisitosArray = event.requisitos.split(',').map(req => req.trim()).filter(req => req);
+            }
+          }
+        } catch (error) {
+          console.warn('Error procesando requisitos para evento', event.nombre, ':', error);
+          requisitosArray = [];
+        }
+      }
+
+      // Función para limpiar requisitos de caracteres no deseados
+      function cleanRequirement(req) {
+        if (typeof req !== 'string') {
+          req = String(req);
+        }
+        // Regex para eliminar {{, }}, " y espacios extra
+        return req.replace(/[{}"]/g, '').trim();
+      }
+
+      // Limpiar todos los requisitos
+      requisitosArray = requisitosArray.map(req => cleanRequirement(req)).filter(req => req.length > 0);
+
+      return `
+        <div class="border border-gray-200 rounded-lg p-6 bg-white hover:shadow-md transition-shadow">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 flex-1 mr-4">${event.nombre || 'Sin título'}</h3>
+            <span class="${statusClass}">${status.status}</span>
+          </div>
+          
+          <p class="text-gray-600 text-sm mb-4 line-clamp-2">${event.descripcion || 'Sin descripción disponible'}</p>
+          
+          <div class="space-y-2 text-sm text-gray-500 mb-4">
+            <div class="flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <span><strong>Inicio:</strong> ${fechaInicioStr} ${formatTime(event.hora_inicio)}</span>
+            </div>
+            <div class="flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <span><strong>Fin:</strong> ${fechaFinStr} ${formatTime(event.hora_fin)}</span>
+            </div>
+            <div class="flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span><strong>Ubicación:</strong> ${event.direccion || 'No especificada'}</span>
+            </div>
+            <div class="flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+              <span><strong>Participantes:</strong> ${event.participantes_actuales || 0}/${event.capacidad_maxima || 'Sin límite'}</span>
+            </div>
+            ${categoria ? `
+              <div class="flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                <span><strong>Categoría:</strong> ${categoria.nombre}</span>
+              </div>
+            ` : ''}
+            ${event.organizacion_nombre ? `
+              <div class="flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+                <span><strong>Organización:</strong> ${event.organizacion_nombre}</span>
+              </div>
+            ` : ''}
+          </div>
+          
+          ${requisitosArray && requisitosArray.length > 0 ? `
+            <div class="mb-4">
+              <div class="text-sm font-medium text-gray-700 mb-2">Requisitos:</div>
+              <div class="flex flex-wrap gap-2">
+                ${requisitosArray.map(req => `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">${req}</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
+          
+          <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+            <span class="text-sm text-gray-500">
+              ${(event.capacidad_maxima - (event.participantes_actuales || 0))} cupos disponibles
+            </span>
+            ${(() => {
+              const isRegistered = userRegistrations[event.id_evento] || false;
+              const isFinished = status.status === 'Finalizado';
+              const isFull = (event.participantes_actuales >= event.capacidad_maxima);
+              const isDisabled = isFinished || isFull || isRegistered;
+              
+              let buttonText = 'Inscribirme';
+              let buttonClass = 'px-4 py-2 text-sm font-medium rounded-md transition-colors';
+              
+              if (isRegistered) {
+                buttonText = 'Ya inscrito';
+                buttonClass += ' bg-green-600 text-white cursor-not-allowed opacity-75';
+              } else if (isFinished) {
+                buttonText = 'Finalizado';
+                buttonClass += ' bg-gray-500 text-white cursor-not-allowed opacity-50';
+              } else if (isFull) {
+                buttonText = 'Lleno';
+                buttonClass += ' bg-gray-500 text-white cursor-not-allowed opacity-50';
+              } else {
+                buttonClass += ' bg-purple-600 text-white hover:bg-purple-700';
+              }
+              
+              return `
+                <button 
+                  onclick="${isDisabled ? '' : `registerToEvent(${event.id_evento})`}"
+                  class="${buttonClass}"
+                  ${isDisabled ? 'disabled' : ''}
+                >
+                  ${buttonText}
+                </button>
+              `;
+            })()}
+          </div>
+        </div>
+      `;
+    } catch (eventError) {
+      console.error(`❌ Error procesando evento ${index + 1}:`, eventError);
+      return '';
+    }
+  }
+
+  // ===== FUNCIONES HELPER =====
+  function getEventStatus(fechaInicio, fechaFin) {
+    const now = new Date();
+    const start = new Date(fechaInicio);
+    const end = new Date(fechaFin);
+
+    if (now < start) {
+      return { status: 'Próximo', color: 'blue' };
+    } else if (now >= start && now <= end) {
+      return { status: 'En Curso', color: 'green' };
+    } else {
+      return { status: 'Finalizado', color: 'gray' };
+    }
+  }
+
+  function getStatusClass(color) {
+    const classes = {
+      blue: 'bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium',
+      green: 'bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium',
+      gray: 'bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium'
+    };
+    return classes[color] || classes.gray;
+  }
+
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  function formatTime(timeString) {
+    if (!timeString) {
+      return 'Hora no especificada';
+    }
+    
+    if (timeString.includes('T')) {
+      const date = new Date(timeString);
+      return date.toLocaleTimeString('es-ES', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    }
+    
+    if (timeString.includes(':')) {
+      return timeString;
+    }
+    
+    return timeString;
+  }
+
+  function showSkeletonLoader() {
+    console.log('🔄 showSkeletonLoader() ejecutado');
+    const skeletonLoader = document.getElementById('skeleton-loader');
+    const eventosContainer = document.getElementById('eventos-container');
+    
+    console.log('🔄 Elementos encontrados:', {
+      skeletonLoader: !!skeletonLoader,
+      eventosContainer: !!eventosContainer
+    });
+    
+    if (skeletonLoader) skeletonLoader.style.display = 'grid';
+    if (eventosContainer) eventosContainer.style.display = 'none';
+  }
+
+  function hideSkeletonLoader() {
+    console.log('🔄 hideSkeletonLoader() ejecutado');
+    const skeletonLoader = document.getElementById('skeleton-loader');
+    const eventosContainer = document.getElementById('eventos-container');
+    
+    console.log('🔄 Elementos encontrados:', {
+      skeletonLoader: !!skeletonLoader,
+      eventosContainer: !!eventosContainer
+    });
+    
+    if (skeletonLoader) {
+      skeletonLoader.style.display = 'none';
+      console.log('🔄 Skeleton loader ocultado');
+    }
+    if (eventosContainer) {
+      eventosContainer.style.display = 'block';
+      console.log('🔄 Eventos container mostrado');
+    }
+  }
+
+  function showLoadingState() {
+    const loadingState = document.getElementById('loading-state');
+    const emptyState = document.getElementById('empty-state');
+    const eventsGrid = document.getElementById('events-grid');
+    const skeletonLoader = document.getElementById('skeleton-loader');
+    
+    if (loadingState) loadingState.style.display = 'block';
+    if (emptyState) emptyState.style.display = 'none';
+    if (eventsGrid) eventsGrid.style.display = 'none';
+    if (skeletonLoader) skeletonLoader.style.display = 'none';
+  }
+
+  function hideLoadingState() {
+    const loadingState = document.getElementById('loading-state');
+    const eventsGrid = document.getElementById('events-grid');
+    
+    if (loadingState) loadingState.style.display = 'none';
+    if (eventsGrid) eventsGrid.style.display = 'grid';
+  }
+
+  function showEmptyState() {
+    const loadingState = document.getElementById('loading-state');
+    const emptyState = document.getElementById('empty-state');
+    const eventsGrid = document.getElementById('events-grid');
+    const skeletonLoader = document.getElementById('skeleton-loader');
+    
+    if (loadingState) loadingState.style.display = 'none';
+    if (emptyState) emptyState.style.display = 'block';
+    if (eventsGrid) eventsGrid.style.display = 'none';
+    if (skeletonLoader) skeletonLoader.style.display = 'none';
+  }
+
+  function hideEmptyState() {
+    const emptyState = document.getElementById('empty-state');
+    if (emptyState) emptyState.style.display = 'none';
+  }
+
+  // ===== FUNCIONES DE FILTRADO =====
+  function filterEvents() {
+    const searchTerm = document.getElementById('search-input')?.value.toLowerCase() || '';
+    const selectedCategory = document.getElementById('category-filter')?.value || '';
+
+    filteredEvents = allEvents.filter(event => {
+      const matchesSearch = event.nombre.toLowerCase().includes(searchTerm) ||
+                           event.descripcion.toLowerCase().includes(searchTerm) ||
+                           (event.organizacion_nombre && event.organizacion_nombre.toLowerCase().includes(searchTerm));
+      
+      const matchesCategory = !selectedCategory || event.id_categoria == selectedCategory;
+      
+      return matchesSearch && matchesCategory;
+    });
+
+    // Actualizar variable global
+    (window as any).filteredEvents = filteredEvents;
+
+    // Actualizar el subtítulo basado en los filtros
+    updateSubtitle(searchTerm, selectedCategory);
+    
+    renderEvents();
+  }
+
+  function updateSubtitle(searchTerm, selectedCategory) {
+    const subtitle = document.getElementById('events-subtitle');
+    if (!subtitle) return;
+
+    let text = 'Encuentra eventos para participar como voluntario';
+    
+    if (searchTerm || selectedCategory) {
+      text = `Mostrando ${filteredEvents.length} evento${filteredEvents.length !== 1 ? 's' : ''}`;
+      
+      if (searchTerm && selectedCategory) {
+        const categoryName = allCategories.find(cat => cat.id_categoria == selectedCategory)?.nombre || 'categoría seleccionada';
+        text += ` que contienen "${searchTerm}" en ${categoryName}`;
+      } else if (searchTerm) {
+        text += ` que contienen "${searchTerm}"`;
+      } else if (selectedCategory) {
+        const categoryName = allCategories.find(cat => cat.id_categoria == selectedCategory)?.nombre || 'categoría seleccionada';
+        text += ` en ${categoryName}`;
+      }
+    }
+    
+    subtitle.textContent = text;
+  }
+
+  // ===== FUNCIONES DE EVENTOS =====
+  function registerToEvent(eventId) {
+    console.log('🎯 Inscribirse en evento:', eventId);
+    
+    // Encontrar el evento en la lista (acceder a la variable global)
+    const globalFilteredEvents = (window as any).filteredEvents;
+    const event = globalFilteredEvents.find(e => e.id_evento === eventId);
+    if (!event) {
+      console.error('❌ Evento no encontrado:', eventId);
+      return;
+    }
+    
+    console.log('📝 Datos del evento encontrado:', event);
+    showRegistrationModal(event);
+  }
+
+  function showRegistrationModal(event) {
+    console.log('📋 Mostrando modal de inscripción para:', event);
+    
+    // Obtener elementos del modal (el modal es el overlay)
+    const modal = document.getElementById('registration-modal');
+    
+    if (!modal) {
+      console.error('❌ Modal no encontrado');
+      return;
+    }
+
+    // Guardar el ID del evento en la variable global
+    currentEventId = event.id_evento;
+    (window as any).currentEventId = currentEventId;
+
+    // Formatear fechas y hora
+    const fechaFormateada = formatDate(event.fecha_inicio);
+    const horaInicio = formatTime(event.hora_inicio);
+    const horaFin = formatTime(event.hora_fin);
+    
+    // Obtener categoría (acceder a la variable global)
+    const globalAllCategories = (window as any).allCategories;
+    const categoria = globalAllCategories.find(cat => cat.id_categoria === event.id_categoria);
+    const categoriaNombre = categoria ? categoria.nombre : 'Sin categoría';
+
+    // Parsear requisitos
+    let requisitosArray = [];
+    try {
+      if (event.requisitos) {
+        if (typeof event.requisitos === 'string') {
+          if (event.requisitos.startsWith('[') || event.requisitos.startsWith('{')) {
+            requisitosArray = JSON.parse(event.requisitos);
+          } else {
+            requisitosArray = event.requisitos.split(',').map(req => req.trim()).filter(req => req);
+          }
+        } else if (Array.isArray(event.requisitos)) {
+          requisitosArray = event.requisitos;
+        }
+      }
+    } catch (e) {
+      console.warn('⚠️ Error parseando requisitos:', e);
+      requisitosArray = [];
+    }
+
+    // Poplar contenido del modal
+    const modalTitle = modal.querySelector('.event-modal-title');
+    const modalDescription = modal.querySelector('.event-modal-description');
+    const locationValue = modal.querySelector('#modal-event-location');
+    const datetimeValue = modal.querySelector('#modal-event-datetime');
+    const participantsValue = modal.querySelector('#modal-event-participants');
+
+    if (modalTitle) modalTitle.textContent = event.titulo || event.nombre || 'Evento sin título';
+    if (modalDescription) modalDescription.textContent = event.descripcion || 'Sin descripción disponible';
+    if (locationValue) locationValue.textContent = event.ubicacion || event.direccion || 'Ubicación por confirmar';
+    if (datetimeValue) datetimeValue.textContent = `${fechaFormateada} • ${horaInicio} - ${horaFin}`;
+    if (participantsValue) {
+      const totalInscritos = event.voluntarios_inscritos ? event.voluntarios_inscritos.length : 0;
+      const capacidadMaxima = event.capacidad_maxima || 'Ilimitada';
+      participantsValue.textContent = `${totalInscritos} inscritos${capacidadMaxima !== 'Ilimitada' ? ` de ${capacidadMaxima}` : ''}`;
+    }
+
+    // Mostrar modal
+    modal.classList.add('active');
+    console.log('✅ Modal mostrado, clases:', modal.className);
+    
+    // Enfocar el primer botón
+    const cancelBtn = modal.querySelector('.btn-cancel');
+    if (cancelBtn) {
+      setTimeout(() => (cancelBtn as HTMLElement).focus(), 100);
+    }
+  }
+
+  function hideRegistrationModal() {
+    console.log('❌ Cerrando modal de inscripción');
+    
+    const modal = document.getElementById('registration-modal');
+    
+    if (modal) {
+      modal.classList.remove('active');
+      console.log('✅ Modal ocultado, clases:', modal.className);
+    }
+  }
+
+  function showSuccessModal() {
+    console.log('🎉 Mostrando modal de éxito');
+    
+    const modal = document.getElementById('success-modal');
+    
+    if (modal) {
+      modal.classList.add('active');
+      console.log('✅ Modal de éxito mostrado');
+      
+      // Enfocar el botón de continuar
+      const continueBtn = modal.querySelector('#close-success-modal');
+      if (continueBtn) {
+        setTimeout(() => (continueBtn as HTMLElement).focus(), 100);
+      }
+    }
+  }
+
+  function hideSuccessModal() {
+    console.log('❌ Cerrando modal de éxito');
+    
+    const modal = document.getElementById('success-modal');
+    
+    if (modal) {
+      modal.classList.remove('active');
+      console.log('✅ Modal de éxito ocultado');
+    }
+  }
+
+  async function confirmRegistration() {
+    console.log('🔄 Confirmando inscripción...');
+    
+    // Obtener el ID del evento actual
+    const eventId = (window as any).currentEventId;
+    
+    if (!eventId) {
+      console.error('❌ No hay evento seleccionado');
+      alert('Error: No se pudo identificar el evento');
+      return;
+    }
+
+    // Deshabilitar el botón para evitar múltiples clics
+    const confirmBtn = document.getElementById('confirm-registration') as HTMLButtonElement;
+    const originalText = confirmBtn ? confirmBtn.textContent : '';
+    
+    if (confirmBtn) {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Inscribiendo...';
+    }
+
+    try {
+      // Llamar al servicio de inscripción
+      const result = await EventsService.registerToEvent(eventId);
+      
+      if (result.success) {
+        console.log('✅ Inscripción exitosa:', result);
+        
+        // Actualizar estado de inscripción localmente
+        userRegistrations[eventId] = true;
+        (window as any).userRegistrations = userRegistrations;
+        
+        // Cerrar modal de inscripción
+        hideRegistrationModal();
+        
+        // Mostrar modal de éxito después de un pequeño delay
+        setTimeout(() => {
+          showSuccessModal();
+        }, 300);
+        
+        // Re-renderizar eventos para mostrar el botón actualizado
+        renderEvents();
+        
+      } else {
+        console.error('❌ Error en inscripción:', result.message);
+        alert(`Error: ${result.message}`);
+      }
+      
+    } catch (error) {
+      console.error('❌ Error inesperado:', error);
+      alert('Error inesperado al procesar la inscripción');
+    } finally {
+      // Restaurar el botón
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = originalText;
+      }
+    }
+  }
+
+  // Hacer funciones globales para que estén disponibles en onclick
+  (window as any).registerToEvent = registerToEvent;
+  (window as any).showRegistrationModal = showRegistrationModal;
+  (window as any).hideRegistrationModal = hideRegistrationModal;
+  (window as any).confirmRegistration = confirmRegistration;
+  (window as any).showSuccessModal = showSuccessModal;
+  (window as any).hideSuccessModal = hideSuccessModal;
+
+  // ===== FUNCIONES DE LOGOUT =====
+  function showLogoutModal() {
+    const modal = document.getElementById('logout-modal');
+    if (modal) {
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function hideLogoutModal() {
+    const modal = document.getElementById('logout-modal');
+    if (modal) {
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        headers: EventsService.getAuthHeaders()
+      });
+
+      localStorage.removeItem('authToken');
+      window.location.href = '/login';
+    } catch (error) {
+      console.error('Error during logout:', error);
+      localStorage.removeItem('authToken');
+      window.location.href = '/login';
+    }
+  }
+
+  // ===== INICIALIZACIÓN =====
+  function initLogoutButton() {
+    const logoutBtn = document.getElementById('logout-btn');
+    const cancelLogout = document.getElementById('cancel-logout');
+    const confirmLogout = document.getElementById('confirm-logout');
+    const modal = document.getElementById('logout-modal');
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', showLogoutModal);
+    }
+
+    if (cancelLogout) {
+      cancelLogout.addEventListener('click', hideLogoutModal);
+    }
+
+    if (confirmLogout) {
+      confirmLogout.addEventListener('click', handleLogout);
+    }
+
+    if (modal) {
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          hideLogoutModal();
+        }
+      });
+    }
+
+    // Cerrar modal con escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal && modal.classList.contains('show')) {
+        hideLogoutModal();
+      }
+    });
+
+    return true;
+  }
+
+  function initRegistrationModal() {
+    const cancelBtn = document.getElementById('cancel-registration');
+    const confirmBtn = document.getElementById('confirm-registration');
+    const closeBtn = document.getElementById('close-registration-modal');
+    const modal = document.getElementById('registration-modal');
+
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', hideRegistrationModal);
+    }
+
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', confirmRegistration);
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', hideRegistrationModal);
+    }
+
+    // Cerrar modal al hacer clic en overlay (cuando se hace clic en el fondo)
+    if (modal) {
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          hideRegistrationModal();
+        }
+      });
+    }
+
+    // Cerrar modal con escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const registrationModal = document.getElementById('registration-modal');
+        const logoutModal = document.getElementById('logout-modal');
+        
+        if (registrationModal && registrationModal.classList.contains('active')) {
+          hideRegistrationModal();
+        }
+        if (logoutModal && logoutModal.classList.contains('show')) {
+          hideLogoutModal();
+        }
+      }
+    });
+
+    return true;
+  }
+
+  function initSuccessModal() {
+    console.log('Inicializando modal de éxito...');
+    const modal = document.getElementById('success-modal');
+    const closeBtn = modal?.querySelector('.btn-success');
+    const overlay = modal?.querySelector('.modal-overlay');
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', hideSuccessModal);
+    }
+
+    if (overlay) {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          hideSuccessModal();
+        }
+      });
+    }
+
+    // También agregar listener para ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal?.classList.contains('show')) {
+        hideSuccessModal();
+      }
+    });
+  }
+
+  function initSearchAndFilter() {
+    const searchInput = document.getElementById('search-input');
+    const categoryFilter = document.getElementById('category-filter');
+
+    if (searchInput) {
+      searchInput.addEventListener('input', filterEvents);
+    }
+
+    if (categoryFilter) {
+      categoryFilter.addEventListener('change', filterEvents);
+    }
+  }
+
+  // ===== FUNCIÓN DE INICIALIZACIÓN SEGURA =====
+  function waitForElements() {
+    return new Promise((resolve) => {
+      const checkElements = () => {
+        const eventosContainer = document.getElementById('eventos-container');
+        const skeletonLoader = document.getElementById('skeleton-loader');
+        const categoryFilter = document.getElementById('category-filter');
+        const searchInput = document.getElementById('search-input');
+        
+        if (eventosContainer && skeletonLoader && categoryFilter && searchInput) {
+          console.log('✅ Todos los elementos críticos encontrados');
+          resolve(true);
+        } else {
+          console.log('⏳ Esperando elementos...');
+          setTimeout(checkElements, 50);
+        }
+      };
+      checkElements();
+    });
+  }
+
+  // ===== EVENTO DOM CONTENT LOADED =====
+  document.addEventListener('DOMContentLoaded', async function() {
+    console.log('🚀 Inicializando página de eventos...');
+    console.log('🚀 document.readyState:', document.readyState);
+    
+    // Esperar a que todos los elementos estén disponibles
+    await waitForElements();
+    
+    console.log('🚀 Iniciando inicialización completa...');
+    
+    // Mostrar skeleton loader al inicio
+    showSkeletonLoader();
+    
+    // Inicializar componentes
+    initLogoutButton();
+    initRegistrationModal();
+    initSuccessModal();
+    initSearchAndFilter();
+    
+    // Cargar datos
+    console.log('🚀 Iniciando carga de datos...');
+    loadCategories();
+    loadEvents();
+  });
+</script>

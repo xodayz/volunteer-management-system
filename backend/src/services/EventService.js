@@ -516,17 +516,17 @@ class EventService {
     try {
       await client.query('BEGIN');
 
-      // Verificar si el evento existe y está activo
+      // Verificar si el evento existe y está disponible para inscripción  
       const eventCheck = await client.query(
-        'SELECT * FROM eventos WHERE id_evento = $1 AND estado_evento = $2',
-        [eventId, 'activo']
+        'SELECT * FROM eventos WHERE id_evento = $1 AND estado_evento IN ($2, $3)',
+        [eventId, 'activo', 'planificado']
       );
 
       if (eventCheck.rows.length === 0) {
         await client.query('ROLLBACK');
         return {
           success: false,
-          message: 'Evento no encontrado o no está activo'
+          message: 'Evento no encontrado o no está disponible para inscripción'
         };
       }
 
@@ -585,6 +585,105 @@ class EventService {
       return {
         success: false,
         message: 'Error al procesar la inscripción'
+      };
+    } finally {
+      client.release();
+    }
+  }
+
+  static async checkUserRegistration(eventId, userId) {
+    const client = await pool.connect();
+    
+    try {
+      console.log(`🔍 Verificando inscripción - EventId: ${eventId}, UserId: ${userId}`);
+      
+      const result = await client.query(
+        'SELECT voluntarios_inscritos FROM eventos WHERE id_evento = $1',
+        [eventId]
+      );
+
+      if (result.rows.length === 0) {
+        console.log(`❌ Evento ${eventId} no encontrado`);
+        return {
+          success: false,
+          message: 'Evento no encontrado'
+        };
+      }
+
+      const event = result.rows[0];
+      console.log(`📋 Voluntarios inscritos en evento ${eventId}:`, event.voluntarios_inscritos);
+      
+      const isRegistered = event.voluntarios_inscritos.includes(userId.toString());
+      console.log(`✅ Usuario ${userId} inscrito: ${isRegistered}`);
+
+      return {
+        success: true,
+        isRegistered: isRegistered
+      };
+
+    } catch (error) {
+      console.error('Error al verificar inscripción:', error);
+      return {
+        success: false,
+        message: 'Error al verificar la inscripción'
+      };
+    } finally {
+      client.release();
+    }
+  }
+
+  // Obtener eventos en los que un voluntario está inscrito
+  static async getEventsByVolunteer(volunteerId) {
+    const client = await pool.connect();
+    
+    try {
+      console.log('📅 EventService.getEventsByVolunteer iniciado para voluntario:', volunteerId);
+
+      const query = `
+        SELECT 
+          e.*,
+          o.nombre as organizacion_nombre,
+          c.nombre as categoria_nombre
+        FROM eventos e
+        LEFT JOIN organizaciones o ON e.id_organizacion = o.id_organizacion
+        LEFT JOIN categorias_eventos c ON e.id_categoria = c.id_categoria
+        WHERE $1 = ANY(e.voluntarios_inscritos)
+        ORDER BY e.fecha_inicio ASC, e.hora_inicio ASC
+      `;
+
+      const result = await client.query(query, [volunteerId.toString()]);
+      
+      console.log('📋 Eventos encontrados:', result.rows.length);
+
+      // Transformar los datos para mantener consistencia con el frontend
+      const eventos = result.rows.map(evento => ({
+        id: evento.id_evento,
+        titulo: evento.nombre,
+        descripcion: evento.descripcion,
+        fechaInicio: evento.fecha_inicio,
+        fechaFin: evento.fecha_fin,
+        horaInicio: evento.hora_inicio,
+        horaFin: evento.hora_fin,
+        ubicacion: evento.direccion,
+        capacidadMaxima: evento.capacidad_maxima,
+        organizacion_nombre: evento.organizacion_nombre,
+        categoria_nombre: evento.categoria_nombre,
+        estado: evento.estado_evento,
+        voluntarios_inscritos: evento.voluntarios_inscritos || [],
+        participantesRegistrados: evento.voluntarios_inscritos ? evento.voluntarios_inscritos.length : 0,
+        requisitos: evento.requisitos
+      }));
+
+      return {
+        success: true,
+        data: eventos
+      };
+
+    } catch (error) {
+      console.error('💥 Error al obtener eventos del voluntario:', error);
+      return {
+        success: false,
+        message: 'Error al obtener los eventos inscritos'
       };
     } finally {
       client.release();
