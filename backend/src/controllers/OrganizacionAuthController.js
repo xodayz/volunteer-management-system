@@ -105,8 +105,14 @@ class OrganizacionAuthController {
 
   static async getProfile(req, res) {
     try {
+      console.log('👤 OrganizacionAuthController.getProfile() - Iniciando...');
+      console.log('👤 req.organizacion:', req.organizacion);
+      
       const organizacionId = req.organizacion.id;
+      console.log('👤 ID de organización:', organizacionId);
+      
       const result = await OrganizacionAuthService.getProfile(organizacionId);
+      console.log('👤 Resultado del servicio:', result);
 
       if (result.success) {
         res.status(200).json(result);
@@ -114,7 +120,7 @@ class OrganizacionAuthController {
         res.status(404).json(result);
       }
     } catch (error) {
-      console.error('Error obteniendo perfil de organización:', error);
+      console.error('❌ Error obteniendo perfil de organización:', error);
       res.status(500).json({
         success: false,
         message: 'Error interno del servidor'

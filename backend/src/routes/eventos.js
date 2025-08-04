@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const EventoController = require('../controllers/EventoController');
+const EventController = require('../controllers/EventController');
+const { authenticateUser } = require('../middleware/userAuth');
 const jwt = require('jsonwebtoken');
 
 const verificarTokenOrganizacion = async (req, res, next) => {
@@ -33,6 +35,16 @@ const verificarTokenOrganizacion = async (req, res, next) => {
   }
 };
 
+// Rutas públicas (sin autenticación)
+router.get('/all', EventController.getAllEvents);
+router.get('/categorias', EventController.getCategorias);
+
+// Rutas para voluntarios (con autenticación de usuario)
+router.post('/:id/register', authenticateUser, EventController.registerVolunteerToEvent);
+router.get('/:id/check-registration', authenticateUser, EventController.checkUserRegistration);
+router.get('/my-inscribed', authenticateUser, EventController.getUserInscribedEvents);
+
+// Aplicar middleware de organización para el resto de las rutas
 router.use(verificarTokenOrganizacion);
 
 router.post('/', EventoController.createEvento);
@@ -40,5 +52,9 @@ router.post('/', EventoController.createEvento);
 router.get('/', EventoController.getEventosByOrganizacion);
 
 router.get('/:id', EventoController.getEventoById);
+
+router.put('/:id', EventoController.updateEvento);
+
+router.delete('/:id', EventoController.deleteEvento);
 
 module.exports = router;

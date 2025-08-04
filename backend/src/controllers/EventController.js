@@ -409,6 +409,130 @@ class EventController {
       });
     }
   }
+
+  static async getAllEvents(req, res) {
+    try {
+      const result = await EventService.getAllEvents();
+
+      if (result.success) {
+        res.json({
+          success: true,
+          data: result.data
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: result.message || 'Error al obtener eventos'
+        });
+      }
+    } catch (error) {
+      console.error('Error en getAllEvents:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor'
+      });
+    }
+  }
+
+  static async registerVolunteerToEvent(req, res) {
+    try {
+      const eventId = parseInt(req.params.id);
+      const userId = req.user.id; // Obtener del token de autenticación
+
+      if (isNaN(eventId)) {
+        return res.status(400).json({
+          success: false,
+          message: 'ID de evento inválido'
+        });
+      }
+
+      const result = await EventService.registerVolunteerToEvent(eventId, userId);
+
+      if (result.success) {
+        res.json({
+          success: true,
+          message: 'Te has inscrito al evento exitosamente'
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: result.message || 'Error al inscribirse al evento'
+        });
+      }
+    } catch (error) {
+      console.error('Error en registerVolunteerToEvent:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor'
+      });
+    }
+  }
+
+  static async checkUserRegistration(req, res) {
+    try {
+      const eventId = parseInt(req.params.id);
+      const userId = req.user.id; // Obtener del token de autenticación
+
+      console.log(`🔍 Controlador checkUserRegistration - EventId: ${eventId}, UserId: ${userId}`);
+
+      if (isNaN(eventId)) {
+        console.log(`❌ ID de evento inválido: ${req.params.id}`);
+        return res.status(400).json({
+          success: false,
+          message: 'ID de evento inválido'
+        });
+      }
+
+      const result = await EventService.checkUserRegistration(eventId, userId);
+      console.log(`📡 Resultado del servicio:`, result);
+
+      if (result.success) {
+        res.json({
+          success: true,
+          isRegistered: result.isRegistered
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: result.message || 'Error al verificar la inscripción'
+        });
+      }
+    } catch (error) {
+      console.error('Error en checkUserRegistration:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor'
+      });
+    }
+  }
+
+  // Obtener eventos en los que el usuario está inscrito
+  static async getUserInscribedEvents(req, res) {
+    try {
+      console.log('📅 EventController.getUserInscribedEvents iniciado');
+      console.log('👤 Usuario ID:', req.user.id);
+
+      const result = await EventService.getEventsByVolunteer(req.user.id);
+      
+      if (result.success) {
+        console.log('✅ Eventos inscritos obtenidos:', result.data.length);
+        res.json({
+          success: true,
+          data: result.data,
+          message: `${result.data.length} eventos encontrados`
+        });
+      } else {
+        console.log('❌ Error obteniendo eventos inscritos:', result.message);
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      console.error('💥 Error en getUserInscribedEvents:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor'
+      });
+    }
+  }
 }
 
 module.exports = EventController;

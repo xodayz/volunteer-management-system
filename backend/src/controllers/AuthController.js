@@ -154,6 +154,32 @@ class AuthController {
             }
         });
     }
+    static getProfile(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log('👤 AuthController.getProfile() - Iniciando...');
+                console.log('👤 req.user:', req.user);
+                
+                const userId = req.user.id;
+                console.log('👤 ID de usuario:', userId);
+                
+                const result = yield AuthService_1.AuthService.getProfile(userId);
+                console.log('👤 Resultado del servicio:', result);
+
+                if (result.success) {
+                    res.status(200).json(result);
+                } else {
+                    res.status(404).json(result);
+                }
+            } catch (error) {
+                console.error('❌ Error obteniendo perfil de usuario:', error);
+                res.status(500).json({
+                    success: false,
+                    message: 'Error interno del servidor'
+                });
+            }
+        });
+    }
     static logout(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             res.json({

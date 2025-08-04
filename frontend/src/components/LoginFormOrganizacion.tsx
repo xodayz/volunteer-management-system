@@ -55,7 +55,7 @@ export default function LoginFormOrganizacion() {
               Portal de Organizaciones
             </h2>
             <p className="text-gray-600">
-              Accede como organización para gestionar oportunidades
+              Accede como organización para gestionar eventos
             </p>
           </div>
           

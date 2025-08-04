@@ -174,7 +174,7 @@ import Layout from '../layouts/Layout.astro';
       try {
         console.log('🌐 Haciendo petición de login...');
         
-        const response = await fetch('http://localhost:3001/api/organizacion/login', {
+        const response = await fetch('http://localhost:3001/api/organizacionAuth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

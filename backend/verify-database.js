@@ -34,7 +34,7 @@ async function checkEventTableStructure() {
           direccion TEXT,
           id_categoria INTEGER NOT NULL,
           capacidad_maxima INTEGER DEFAULT 50,
-          voluntarios_inscritos INTEGER DEFAULT 0,
+          voluntarios_inscritos TEXT[] DEFAULT ARRAY[]::TEXT[],
           requisitos TEXT,
           estado_evento VARCHAR(20) DEFAULT 'activo',
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

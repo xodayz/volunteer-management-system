@@ -46,6 +46,7 @@ const verificarTokenOrganizacion = async (req, res, next) => {
 
     next();
   } catch (error) {
+    console.error('❌ Error en verificarTokenOrganizacion:', error);
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
         success: false,

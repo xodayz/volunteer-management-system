@@ -181,5 +181,49 @@ class AuthService {
             }
         });
     }
+
+    static getProfile(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log('👤 AuthService.getProfile() - Obteniendo perfil para ID:', userId);
+                
+                const user = yield User_1.UserModel.findById(userId);
+                if (!user) {
+                    return {
+                        success: false,
+                        message: 'Usuario no encontrado'
+                    };
+                }
+
+                console.log('✅ Usuario encontrado:', user.nombre);
+
+                // Devolver datos del perfil sin información sensible
+                const userProfile = {
+                    id: user.id_usuario,
+                    username: user.username,
+                    nombre: user.nombre,
+                    correo: user.correo,
+                    telefono: user.telefono,
+                    fecha_nacimiento: user.fecha_nacimiento,
+                    direccion: user.direccion,
+                    interes_habilidades: user.interes_habilidades,
+                    rol_usuario: user.rol_usuario,
+                    fecha_registro: user.created_at
+                };
+
+                return {
+                    success: true,
+                    data: userProfile
+                };
+            }
+            catch (error) {
+                console.error('❌ Error obteniendo perfil de usuario:', error);
+                return {
+                    success: false,
+                    message: 'Error interno del servidor'
+                };
+            }
+        });
+    }
 }
 exports.AuthService = AuthService;

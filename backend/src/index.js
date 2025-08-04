@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const organizacionAuthRoutes = require('./routes/organizacionAuth');
 const eventosRoutes = require('./routes/eventos');
 require('dotenv').config();
+// Nuevo endpoint agregado - reinicio
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -31,7 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined'));
 
 app.use('/api/auth', authRoutes.default || authRoutes);
-app.use('/api/organizacion', organizacionAuthRoutes);
+app.use('/api/organizacionAuth', organizacionAuthRoutes);
 app.use('/api/eventos', eventosRoutes);
 
 app.get('/api/auth/test', (req, res) => {
