@@ -1,0 +1,681 @@
+---
+import type { Layout } from "lucide-react"
+
+title: "Perfil de Organización"
+---
+
+<Layout title="Perfil de Organización">
+  <main class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Perfil de Organización</h1>
+        <p class="mt-2 text-sm text-gray-600">
+          Gestiona la información de tu organización y configuración de seguridad
+        </p>
+      </div>
+
+      <!-- Navegación de tabs -->
+      <div class="border-b border-gray-200 mb-8">
+        <nav class="-mb-px flex space-x-8">
+          <button id="general-tab" class="tab-button active whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+            Información General
+          </button>
+          <button id="security-tab" class="tab-button whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+            Seguridad
+          </button>
+        </nav>
+      </div>
+
+      <!-- Loading state -->
+      <div id="loading" class="text-center py-8">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <p class="mt-2 text-gray-600">Cargando perfil...</p>
+      </div>
+
+      <!-- Error state -->
+      <div id="error-state" class="hidden bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+        <div class="flex">
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">Error al cargar el perfil</h3>
+            <p id="error-message" class="mt-2 text-sm text-red-700"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Información General -->
+      <div id="general-content" class="tab-content">
+        <div class="bg-white shadow rounded-lg">
+          <form id="profile-form" class="p-6 space-y-6">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <!-- Nombre de la organización -->
+              <div>
+                <label for="nombre" class="block text-sm font-medium text-gray-700">
+                  Nombre de la Organización *
+                </label>
+                <input
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  required
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="Nombre de la organización"
+                />
+              </div>
+
+              <!-- Nombre del representante -->
+              <div>
+                <label for="nombre_representante" class="block text-sm font-medium text-gray-700">
+                  Nombre del Representante *
+                </label>
+                <input
+                  type="text"
+                  id="nombre_representante"
+                  name="nombre_representante"
+                  required
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="Nombre completo del representante"
+                />
+              </div>
+
+              <!-- Correo del representante -->
+              <div>
+                <label for="correo_representante" class="block text-sm font-medium text-gray-700">
+                  Correo del Representante *
+                </label>
+                <input
+                  type="email"
+                  id="correo_representante"
+                  name="correo_representante"
+                  required
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="correo@ejemplo.com"
+                />
+              </div>
+
+              <!-- Teléfono del representante -->
+              <div>
+                <label for="telefono_representante" class="block text-sm font-medium text-gray-700">
+                  Teléfono del Representante
+                </label>
+                <input
+                  type="tel"
+                  id="telefono_representante"
+                  name="telefono_representante"
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+
+              <!-- Sitio web -->
+              <div>
+                <label for="sitio_web" class="block text-sm font-medium text-gray-700">
+                  Sitio Web
+                </label>
+                <input
+                  type="url"
+                  id="sitio_web"
+                  name="sitio_web"
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="https://www.ejemplo.com"
+                />
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div>
+              <label for="descripcion" class="block text-sm font-medium text-gray-700">
+                Descripción de la Organización
+              </label>
+              <textarea
+                id="descripcion"
+                name="descripcion"
+                rows="4"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder="Describe la misión y actividades de tu organización..."
+              ></textarea>
+            </div>
+
+            <!-- Dirección -->
+            <div>
+              <label for="direccion" class="block text-sm font-medium text-gray-700">
+                Dirección
+              </label>
+              <textarea
+                id="direccion"
+                name="direccion"
+                rows="2"
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder="Dirección completa de la organización"
+              ></textarea>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex justify-end space-x-3">
+              <button
+                type="button"
+                id="cancel-changes"
+                class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                disabled
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                id="save-profile"
+                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                disabled
+              >
+                <span id="save-profile-text">Guardar Cambios</span>
+                <span id="save-profile-loading" class="hidden">
+                  <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Guardando...
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tab: Seguridad -->
+      <div id="security-content" class="tab-content hidden">
+        <div class="bg-white shadow rounded-lg">
+          <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-6">Cambiar Contraseña</h3>
+            
+            <form id="password-form" class="space-y-6">
+              <!-- Contraseña actual -->
+              <div>
+                <label for="current-password" class="block text-sm font-medium text-gray-700">
+                  Contraseña Actual *
+                </label>
+                <div class="mt-1 relative">
+                  <input
+                    type="password"
+                    id="current-password"
+                    name="currentPassword"
+                    required
+                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm pr-10"
+                    placeholder="Ingresa tu contraseña actual"
+                  />
+                  <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center toggle-password" data-target="current-password">
+                    <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Nueva contraseña -->
+              <div>
+                <label for="new-password" class="block text-sm font-medium text-gray-700">
+                  Nueva Contraseña *
+                </label>
+                <div class="mt-1 relative">
+                  <input
+                    type="password"
+                    id="new-password"
+                    name="newPassword"
+                    required
+                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm pr-10"
+                    placeholder="Mínimo 8 caracteres con mayúsculas, minúsculas, números y símbolos"
+                  />
+                  <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center toggle-password" data-target="new-password">
+                    <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </button>
+                </div>
+                <div id="password-strength" class="mt-2 hidden">
+                  <div class="bg-gray-200 rounded-full h-2">
+                    <div id="strength-bar" class="h-2 rounded-full transition-all duration-300"></div>
+                  </div>
+                  <p id="strength-text" class="text-xs mt-1"></p>
+                </div>
+              </div>
+
+              <!-- Confirmar contraseña -->
+              <div>
+                <label for="confirm-password" class="block text-sm font-medium text-gray-700">
+                  Confirmar Nueva Contraseña *
+                </label>
+                <div class="mt-1 relative">
+                  <input
+                    type="password"
+                    id="confirm-password"
+                    name="confirmPassword"
+                    required
+                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm pr-10"
+                    placeholder="Confirma tu nueva contraseña"
+                  />
+                  <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center toggle-password" data-target="confirm-password">
+                    <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </button>
+                </div>
+                <p id="password-match-message" class="text-xs mt-1 hidden"></p>
+              </div>
+
+              <!-- Botones -->
+              <div class="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  id="cancel-password"
+                  class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  id="save-password"
+                  class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                  disabled
+                >
+                  <span id="save-password-text">Cambiar Contraseña</span>
+                  <span id="save-password-loading" class="hidden">
+                    <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Cambiando...
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div id="notification-container" class="fixed bottom-4 right-4 z-50"></div>
+    </div>
+  </main>
+
+  <script>
+    import OrganizacionProfileService from '../services/OrganizacionProfileService';
+
+    // Estado de la aplicación
+    let originalProfileData = {};
+    let hasProfileChanges = false;
+    let hasPasswordChanges = false;
+
+    // Elementos del DOM
+    const loadingEl = document.getElementById('loading');
+    const errorStateEl = document.getElementById('error-state');
+    const errorMessageEl = document.getElementById('error-message');
+    const profileForm = document.getElementById('profile-form');
+    const passwordForm = document.getElementById('password-form');
+    const saveProfileBtn = document.getElementById('save-profile');
+    const cancelChangesBtn = document.getElementById('cancel-changes');
+    const savePasswordBtn = document.getElementById('save-password');
+
+    // Inicializar la página
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Verificar autenticación
+      const token = localStorage.getItem('organizacionAuthToken');
+      if (!token) {
+        window.location.href = '/loginOrg';
+        return;
+      }
+
+      await loadProfile();
+      setupEventListeners();
+    });
+
+    // Cargar perfil de la organización
+    async function loadProfile() {
+      try {
+        showLoading(true);
+        const response = await OrganizacionProfileService.getProfile();
+        
+        if (response.success) {
+          originalProfileData = response.data;
+          populateForm(response.data);
+          showError(false);
+        } else {
+          showError(true, response.message);
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+        showError(true, 'Error de conexión. Verifica tu conexión a internet.');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // Poblar formulario con datos
+    function populateForm(data) {
+      const fields = [
+        'nombre', 'descripcion', 'nombre_representante', 
+        'correo_representante', 'telefono_representante', 
+        'direccion', 'sitio_web'
+      ];
+      
+      fields.forEach(field => {
+        const element = document.getElementById(field);
+        if (element && data[field]) {
+          element.value = data[field];
+        }
+      });
+    }
+
+    // Configurar event listeners
+    function setupEventListeners() {
+      // Tabs
+      document.getElementById('general-tab').addEventListener('click', () => switchTab('general'));
+      document.getElementById('security-tab').addEventListener('click', () => switchTab('security'));
+
+      // Formulario de perfil
+      profileForm.addEventListener('input', checkProfileChanges);
+      profileForm.addEventListener('submit', handleProfileSubmit);
+      cancelChangesBtn.addEventListener('click', cancelProfileChanges);
+
+      // Formulario de contraseña
+      passwordForm.addEventListener('input', checkPasswordForm);
+      passwordForm.addEventListener('submit', handlePasswordSubmit);
+      document.getElementById('cancel-password').addEventListener('click', cancelPasswordChanges);
+
+      // Mostrar/ocultar contraseñas
+      document.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', togglePasswordVisibility);
+      });
+
+      // Validación de contraseña en tiempo real
+      document.getElementById('new-password').addEventListener('input', checkPasswordStrength);
+      document.getElementById('confirm-password').addEventListener('input', checkPasswordMatch);
+    }
+
+    // Cambiar tabs
+    function switchTab(tab) {
+      // Actualizar botones de tab
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(`${tab}-tab`).classList.add('active');
+
+      // Mostrar contenido correspondiente
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+      });
+      document.getElementById(`${tab}-content`).classList.remove('hidden');
+    }
+
+    // Verificar cambios en el perfil
+    function checkProfileChanges() {
+      const formData = new FormData(profileForm);
+      const currentData = Object.fromEntries(formData);
+      
+      hasProfileChanges = Object.keys(currentData).some(key => {
+        return currentData[key] !== (originalProfileData[key] || '');
+      });
+
+      saveProfileBtn.disabled = !hasProfileChanges;
+      cancelChangesBtn.disabled = !hasProfileChanges;
+    }
+
+    // Manejar envío del formulario de perfil
+    async function handleProfileSubmit(e) {
+      e.preventDefault();
+      
+      if (!hasProfileChanges) return;
+
+      setButtonLoading('save-profile', true);
+
+      try {
+        const formData = new FormData(profileForm);
+        const updateData = {};
+        
+        // Solo incluir campos que han cambiado
+        for (const [key, value] of formData.entries()) {
+          if (value.trim() !== (originalProfileData[key] || '')) {
+            updateData[key] = value.trim();
+          }
+        }
+
+        const response = await OrganizacionProfileService.updateProfile(updateData);
+        
+        if (response.success) {
+          originalProfileData = response.data;
+          hasProfileChanges = false;
+          saveProfileBtn.disabled = true;
+          cancelChangesBtn.disabled = true;
+          showNotification('Perfil actualizado exitosamente', 'success');
+        } else {
+          showNotification(response.message, 'error');
+        }
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        showNotification('Error de conexión. Intenta de nuevo.', 'error');
+      } finally {
+        setButtonLoading('save-profile', false);
+      }
+    }
+
+    // Cancelar cambios del perfil
+    function cancelProfileChanges() {
+      populateForm(originalProfileData);
+      hasProfileChanges = false;
+      saveProfileBtn.disabled = true;
+      cancelChangesBtn.disabled = true;
+    }
+
+    // Verificar formulario de contraseña
+    function checkPasswordForm() {
+      const currentPassword = document.getElementById('current-password').value;
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+
+      const isValid = currentPassword.length > 0 && 
+                     newPassword.length >= 8 && 
+                     newPassword === confirmPassword &&
+                     isPasswordStrong(newPassword);
+
+      savePasswordBtn.disabled = !isValid;
+    }
+
+    // Verificar fortaleza de contraseña
+    function isPasswordStrong(password) {
+      const minLength = password.length >= 8;
+      const hasLower = /[a-z]/.test(password);
+      const hasUpper = /[A-Z]/.test(password);
+      const hasNumber = /\d/.test(password);
+      const hasSpecial = /[@$!%*?&]/.test(password);
+      
+      return minLength && hasLower && hasUpper && hasNumber && hasSpecial;
+    }
+
+    // Mostrar fortaleza de contraseña
+    function checkPasswordStrength() {
+      const password = document.getElementById('new-password').value;
+      const strengthContainer = document.getElementById('password-strength');
+      const strengthBar = document.getElementById('strength-bar');
+      const strengthText = document.getElementById('strength-text');
+
+      if (password.length === 0) {
+        strengthContainer.classList.add('hidden');
+        return;
+      }
+
+      strengthContainer.classList.remove('hidden');
+
+      let score = 0;
+      let feedback = [];
+
+      if (password.length >= 8) score++;
+      else feedback.push('al menos 8 caracteres');
+
+      if (/[a-z]/.test(password)) score++;
+      else feedback.push('minúsculas');
+
+      if (/[A-Z]/.test(password)) score++;
+      else feedback.push('mayúsculas');
+
+      if (/\d/.test(password)) score++;
+      else feedback.push('números');
+
+      if (/[@$!%*?&]/.test(password)) score++;
+      else feedback.push('símbolos');
+
+      const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-blue-500', 'bg-green-500'];
+      const labels = ['Muy débil', 'Débil', 'Regular', 'Fuerte', 'Muy fuerte'];
+
+      strengthBar.className = `h-2 rounded-full transition-all duration-300 ${colors[score]}`;
+      strengthBar.style.width = `${(score / 5) * 100}%`;
+
+      if (score < 5) {
+        strengthText.textContent = `${labels[score]} - Falta: ${feedback.join(', ')}`;
+        strengthText.className = 'text-xs mt-1 text-orange-600';
+      } else {
+        strengthText.textContent = labels[score];
+        strengthText.className = 'text-xs mt-1 text-green-600';
+      }
+    }
+
+    // Verificar coincidencia de contraseñas
+    function checkPasswordMatch() {
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const messageEl = document.getElementById('password-match-message');
+
+      if (confirmPassword.length === 0) {
+        messageEl.classList.add('hidden');
+        return;
+      }
+
+      messageEl.classList.remove('hidden');
+
+      if (newPassword === confirmPassword) {
+        messageEl.textContent = '✓ Las contraseñas coinciden';
+        messageEl.className = 'text-xs mt-1 text-green-600';
+      } else {
+        messageEl.textContent = '✗ Las contraseñas no coinciden';
+        messageEl.className = 'text-xs mt-1 text-red-600';
+      }
+    }
+
+    // Manejar envío del formulario de contraseña
+    async function handlePasswordSubmit(e) {
+      e.preventDefault();
+
+      setButtonLoading('save-password', true);
+
+      try {
+        const formData = new FormData(passwordForm);
+        const passwordData = Object.fromEntries(formData);
+
+        const response = await OrganizacionProfileService.changePassword(passwordData);
+
+        if (response.success) {
+          passwordForm.reset();
+          savePasswordBtn.disabled = true;
+          document.getElementById('password-strength').classList.add('hidden');
+          document.getElementById('password-match-message').classList.add('hidden');
+          showNotification('Contraseña cambiada exitosamente', 'success');
+        } else {
+          showNotification(response.message, 'error');
+        }
+      } catch (error) {
+        console.error('Error changing password:', error);
+        showNotification('Error de conexión. Intenta de nuevo.', 'error');
+      } finally {
+        setButtonLoading('save-password', false);
+      }
+    }
+
+    // Cancelar cambios de contraseña
+    function cancelPasswordChanges() {
+      passwordForm.reset();
+      savePasswordBtn.disabled = true;
+      document.getElementById('password-strength').classList.add('hidden');
+      document.getElementById('password-match-message').classList.add('hidden');
+    }
+
+    // Mostrar/ocultar contraseña
+    function togglePasswordVisibility(e) {
+      const targetId = e.currentTarget.dataset.target;
+      const input = document.getElementById(targetId);
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+      } else {
+        input.type = 'password';
+      }
+    }
+
+    // Funciones de utilidad
+    function showLoading(show) {
+      loadingEl.style.display = show ? 'block' : 'none';
+      profileForm.style.display = show ? 'none' : 'block';
+    }
+
+    function showError(show, message = '') {
+      if (show) {
+        errorStateEl.classList.remove('hidden');
+        errorMessageEl.textContent = message;
+      } else {
+        errorStateEl.classList.add('hidden');
+      }
+    }
+
+    function setButtonLoading(buttonId, loading) {
+      const button = document.getElementById(buttonId);
+      const textEl = document.getElementById(`${buttonId}-text`);
+      const loadingEl = document.getElementById(`${buttonId}-loading`);
+
+      if (loading) {
+        button.disabled = true;
+        textEl.classList.add('hidden');
+        loadingEl.classList.remove('hidden');
+      } else {
+        button.disabled = false;
+        textEl.classList.remove('hidden');
+        loadingEl.classList.add('hidden');
+      }
+    }
+
+    function showNotification(message, type = 'info') {
+      const container = document.getElementById('notification-container');
+      const notification = document.createElement('div');
+      
+      const bgColor = type === 'success' ? 'bg-green-500' : 
+                     type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+      
+      notification.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg mb-2 transform transition-transform duration-300 translate-x-full`;
+      notification.textContent = message;
+      
+      container.appendChild(notification);
+      
+      // Animar entrada
+      setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+      }, 100);
+      
+      // Auto-remove después de 5 segundos
+      setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+          if (container.contains(notification)) {
+            container.removeChild(notification);
+          }
+        }, 300);
+      }, 5000);
+    }
+  </script>
+
+  <style>
+    .tab-button {
+      @apply border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300;
+    }
+    
+    .tab-button.active {
+      @apply border-blue-500 text-blue-600;
+    }
+  </style>
+</Layout>

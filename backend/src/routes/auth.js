@@ -14,6 +14,8 @@ router.get('/verify', auth_1.authenticateToken, AuthController_1.AuthController.
 
 router.get('/profile', auth_1.authenticateToken, AuthController_1.AuthController.getProfile);
 
+router.put('/profile', auth_1.authenticateToken, AuthController_1.AuthController.updateProfile);
+
 router.post('/logout', auth_1.authenticateToken, AuthController_1.AuthController.logout);
 
 router.get('/test', (req, res) => {

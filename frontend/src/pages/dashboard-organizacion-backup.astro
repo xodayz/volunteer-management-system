@@ -12,13 +12,64 @@ import Layout from '../layouts/Layout.astro';
             <h1 class="text-xl font-bold text-purple-600">Portal de Organizaciones</h1>
           </div>
           <div class="flex items-center space-x-4">
-            <a href="/dashboard-organizacion" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">
-              Dashboard
-            </a>
-            <a href="/dashboard-organizacion/perfilOrg" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">
-              Mi Perfil
-            </a>
-            <a href="#" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium">
+            <a href="#" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded      // Total de voluntarios registrados (suma de todos los voluntarios_inscritos)
+      const totalVoluntarios = events.reduce((sum, event) => {
+        // Priorizar voluntarios_inscritos, luego participantesRegistrados
+        if (event.voluntarios_inscritos && Array.isArray(event.voluntarios_inscritos)) {
+          return sum + event.voluntarios_inscritos.length;
+        } else if (event.participantesRegistrados) {
+          return sum + event.participantesRegistrados;
+        }
+        return sum;
+      }, 0);
+
+      // Estimación de horas de voluntariado (basado en duración del evento)
+      const horasVoluntariado = events.reduce((sum, event) => {
+        let voluntariosEvento = 0;
+        
+        // Obtener número de voluntarios
+        if (event.voluntarios_inscritos && Array.isArray(event.voluntarios_inscritos)) {
+          voluntariosEvento = event.voluntarios_inscritos.length;
+        } else if (event.participantesRegistrados) {
+          voluntariosEvento = event.participantesRegistrados;
+        }
+        
+        if (voluntariosEvento > 0) {
+          try {
+            // Intentar múltiples formatos de fecha
+            let start, end;
+            
+            // Formato 1: fechaInicio (ISO string)
+            if (event.fechaInicio) {
+              start = new Date(event.fechaInicio);
+            } else if (event.fecha_inicio) {
+              start = new Date(event.fecha_inicio);
+            }
+            
+            if (event.fechaFin) {
+              end = new Date(event.fechaFin);
+            } else if (event.fecha_fin) {
+              end = new Date(event.fecha_fin);
+            }
+            
+            // Validar que las fechas sean válidas
+            if (start && end && !isNaN(start.getTime()) && !isNaN(end.getTime())) {
+              const duracionMs = end.getTime() - start.getTime();
+              const duracionHoras = Math.max(1, Math.round(duracionMs / (1000 * 60 * 60))); // Mínimo 1 hora
+              return sum + (voluntariosEvento * duracionHoras);
+            } else {
+              // Si no podemos calcular la duración, usar 4 horas por defecto
+              console.warn('No se pudo calcular duración para evento:', event.id || event.titulo);
+              return sum + (voluntariosEvento * 4);
+            }
+          } catch (error) {
+            console.error('Error calculando horas para evento:', event.id || event.titulo, error);
+            // Usar 4 horas por defecto en caso de error
+            return sum + (voluntariosEvento * 4);
+          }
+        }
+        return sum;
+      }, 0);dium">
               Eventos
             </a>
             <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
@@ -931,7 +982,6 @@ import Layout from '../layouts/Layout.astro';
 
           <!-- Botones de Acción -->
           <div class="mt-4 pt-4 border-t border-gray-100 flex justify-end space-x-2">
-            ${status.status !== 'Finalizado' ? `
             <button 
               onclick="editEvent(${event.id || event.evento_id})" 
               class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -942,7 +992,6 @@ import Layout from '../layouts/Layout.astro';
               </svg>
               Editar
             </button>
-            ` : ''}
             <button 
               onclick="deleteEvent(${event.id || event.evento_id})" 
               class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
@@ -1146,21 +1195,8 @@ import Layout from '../layouts/Layout.astro';
       if (!checkAuth()) return;
       
       try {
-        // Construir las fechas completas con hora
-        // Asegurar que la hora tenga el formato correcto (HH:MM:SS)
-        const horaInicio = eventData.hora_inicio.includes(':') ? 
-          (eventData.hora_inicio.split(':').length === 2 ? `${eventData.hora_inicio}:00` : eventData.hora_inicio) :
-          eventData.hora_inicio;
-        
-        const horaFin = eventData.hora_fin.includes(':') ? 
-          (eventData.hora_fin.split(':').length === 2 ? `${eventData.hora_fin}:00` : eventData.hora_fin) :
-          eventData.hora_fin;
-        
-        const fechaInicio = `${eventData.fecha_inicio}T${horaInicio}`;
-        const fechaFin = `${eventData.fecha_fin}T${horaFin}`;
-        
-        console.log('🕐 Horas procesadas:', { horaInicio, horaFin });
-        console.log('📅 Fechas construidas:', { fechaInicio, fechaFin });
+        const fechaInicio = `${eventData.fecha_inicio}T${eventData.hora_inicio}:00`;
+        const fechaFin = `${eventData.fecha_fin}T${eventData.hora_fin}:00`;
         
         const dataParaEnviar = {
           titulo: eventData.titulo,
@@ -1283,20 +1319,8 @@ import Layout from '../layouts/Layout.astro';
       
       try {
         // Construir las fechas completas con hora
-        // Asegurar que la hora tenga el formato correcto (HH:MM:SS)
-        const horaInicio = formData.hora_inicio.includes(':') ? 
-          (formData.hora_inicio.split(':').length === 2 ? `${formData.hora_inicio}:00` : formData.hora_inicio) :
-          formData.hora_inicio;
-        
-        const horaFin = formData.hora_fin.includes(':') ? 
-          (formData.hora_fin.split(':').length === 2 ? `${formData.hora_fin}:00` : formData.hora_fin) :
-          formData.hora_fin;
-        
-        const fechaInicio = `${formData.fecha_inicio}T${horaInicio}`;
-        const fechaFin = `${formData.fecha_fin}T${horaFin}`;
-        
-        console.log('🕐 Horas procesadas:', { horaInicio, horaFin });
-        console.log('📅 Fechas construidas:', { fechaInicio, fechaFin });
+        const fechaInicio = `${formData.fecha_inicio}T${formData.hora_inicio}:00`;
+        const fechaFin = `${formData.fecha_fin}T${formData.hora_fin}:00`;
         
         const dataParaEnviar = {
           titulo: formData.titulo,
@@ -1348,21 +1372,11 @@ import Layout from '../layouts/Layout.astro';
 
       // Horas - usar los campos separados de hora de la base de datos
       if (event.horaInicio || event.hora_inicio) {
-        let horaInicio = event.horaInicio || event.hora_inicio;
-        // Convertir de HH:MM:SS a HH:MM si es necesario
-        if (horaInicio && horaInicio.split(':').length === 3) {
-          horaInicio = horaInicio.substring(0, 5); // Tomar solo HH:MM
-        }
-        document.getElementById('edit-hora-inicio').value = horaInicio;
+        document.getElementById('edit-hora-inicio').value = event.horaInicio || event.hora_inicio;
       }
       
       if (event.horaFin || event.hora_fin) {
-        let horaFin = event.horaFin || event.hora_fin;
-        // Convertir de HH:MM:SS a HH:MM si es necesario
-        if (horaFin && horaFin.split(':').length === 3) {
-          horaFin = horaFin.substring(0, 5); // Tomar solo HH:MM
-        }
-        document.getElementById('edit-hora-fin').value = horaFin;
+        document.getElementById('edit-hora-fin').value = event.horaFin || event.hora_fin;
       }
       
       document.getElementById('edit-capacidad-maxima').value = event.capacidadMaxima || event.capacidad_maxima || '';

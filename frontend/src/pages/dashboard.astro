@@ -12,6 +12,7 @@ import Layout from '../layouts/Layout.astro';
       <div class="nav-links">
         <a href="/dashboard" class="nav-link active">Inicio</a>
         <a href="/dashboard/all-events" class="nav-link">Eventos</a>
+        <a href="/dashboard/perfil" class="nav-link">Perfil</a>
         <button id="logout-btn" class="logout-nav-btn">Cerrar Sesión</button>
       </div>
     </div>
@@ -504,8 +505,8 @@ import Layout from '../layouts/Layout.astro';
   console.log('🚀 DASHBOARD SCRIPT INICIADO');
   
   const API_BASE_URL = 'http://localhost:3001/api';
-  let inscribedEvents = [];
-  let userData = null;
+  let inscribedEvents: any[] = [];
+  let userData: any = null;
 
   // Servicio para autenticación y headers
   const AuthService = {
@@ -679,7 +680,7 @@ import Layout from '../layouts/Layout.astro';
   }
 
   // Función para determinar el estado del evento
-  function getEventStatus(fechaInicio, fechaFin, estado) {
+  function getEventStatus(fechaInicio: any, fechaFin: any, estado: any) {
     const today = new Date();
     const startDate = new Date(fechaInicio);
     const endDate = new Date(fechaFin);
@@ -702,7 +703,7 @@ import Layout from '../layouts/Layout.astro';
   }
 
   // Función para obtener los estilos del badge de estado
-  function getStatusStyles(color) {
+  function getStatusStyles(color: any) {
     const baseStyles = 'padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; position: absolute; top: 12px; right: 12px;';
     
     switch (color) {
