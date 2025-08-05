@@ -225,5 +225,24 @@ class AuthService {
             }
         });
     }
+    
+    static updateProfile(userId, updateData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log('🔄 AuthService: Iniciando actualización de perfil para usuario:', userId);
+                console.log('📝 AuthService: Datos recibidos:', updateData);
+                const result = yield User_1.UserModel.updateProfile(userId, updateData);
+                console.log('📊 AuthService: Resultado del modelo:', result);
+                return result;
+            }
+            catch (error) {
+                console.error('❌ AuthService: Error en updateProfile:', error);
+                return {
+                    success: false,
+                    message: 'Error interno del servidor'
+                };
+            }
+        });
+    }
 }
 exports.AuthService = AuthService;

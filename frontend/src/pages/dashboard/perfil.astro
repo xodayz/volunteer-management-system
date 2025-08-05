@@ -1,0 +1,1506 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { UserService } from '../../services/UserService';
+---
+
+<Layout title="Perfil - Sistema Voluntariado">
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <h2>Sistema Voluntariado</h2>
+      </div>
+      <div class="nav-links">
+        <a href="/dashboard" class="nav-link">Inicio</a>
+        <a href="/dashboard/all-events" class="nav-link">Eventos</a>
+        <a href="/dashboard/perfil" class="nav-link active">Perfil</a>
+        <button id="logout-btn" class="logout-nav-btn">Cerrar Sesión</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+      <div class="header-content">
+        <h1 class="main-title">Mi Perfil</h1>
+        <p class="subtitle">Administra tu información personal y configuración de cuenta</p>
+      </div>
+    </div>
+
+    <!-- Profile Content -->
+    <div class="dashboard-container">
+      <!-- Información General -->
+      <div class="profile-section">
+        <div class="section-header">
+          <h2 class="section-title">Información General</h2>
+          <p class="section-description">Actualiza tu información personal y de contacto</p>
+        </div>
+
+        <form id="general-info-form" class="profile-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="username" class="form-label">Nombre de Usuario</label>
+              <input 
+                type="text" 
+                id="username" 
+                name="username" 
+                class="form-input"
+                placeholder="Tu nombre de usuario"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="nombre" class="form-label">Nombre Completo</label>
+              <input 
+                type="text" 
+                id="nombre" 
+                name="nombre" 
+                class="form-input"
+                placeholder="Tu nombre completo"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="correo" class="form-label">Correo Electrónico</label>
+              <input 
+                type="email" 
+                id="correo" 
+                name="correo" 
+                class="form-input"
+                placeholder="tu@correo.com"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input 
+                type="tel" 
+                id="telefono" 
+                name="telefono" 
+                class="form-input"
+                placeholder="(000) 000-0000"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="habilidades_intereses" class="form-label">Intereses y Habilidades *</label>
+              <div class="dropdown-container">
+                <div class="dropdown-header" id="dropdown-header">
+                  <span class="dropdown-placeholder">Selecciona tus intereses y habilidades</span>
+                  <svg class="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </div>
+                <div class="dropdown-content" id="dropdown-content">
+                  <div id="categorias-loading" class="dropdown-loading">
+                    <div class="loading-animation">
+                      <div class="loading-circle"></div>
+                      <div class="loading-circle"></div>
+                      <div class="loading-circle"></div>
+                    </div>
+                    <p>Cargando categorías...</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Campo oculto para envío del formulario -->
+              <input type="hidden" id="habilidades_intereses" name="habilidades_intereses" value="">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="direccion" class="form-label">Dirección</label>
+              <input 
+                type="text" 
+                id="direccion" 
+                name="direccion" 
+                class="form-input"
+                placeholder="Tu dirección completa"
+              >
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="save-general-btn">
+              <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              Confirmar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Seguridad -->
+      <div class="profile-section">
+        <div class="section-header">
+          <h2 class="section-title">Seguridad</h2>
+          <p class="section-description">Cambia tu contraseña para mantener tu cuenta segura</p>
+        </div>
+
+        <form id="security-form" class="profile-form">
+          <div class="form-grid security-grid">
+            <div class="form-group">
+              <label for="password-actual" class="form-label">Contraseña Actual</label>
+              <input 
+                type="password" 
+                id="password-actual" 
+                name="password_actual" 
+                class="form-input"
+                placeholder="********"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="password-nueva" class="form-label">Nueva Contraseña</label>
+              <input 
+                type="password" 
+                id="password-nueva" 
+                name="password_nueva" 
+                class="form-input"
+                placeholder="Nueva contraseña"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="password-confirmar" class="form-label">Confirmar Contraseña</label>
+              <input 
+                type="password" 
+                id="password-confirmar" 
+                name="password_confirmar" 
+                class="form-input"
+                placeholder="Confirma tu nueva contraseña"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="save-security-btn">
+              <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              Confirmar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal de Logout -->
+  <div id="logout-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Cerrar Sesión</h3>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas cerrar sesión?</p>
+      </div>
+      <div class="modal-footer">
+        <button id="cancel-logout" class="btn-secondary">Cancelar</button>
+        <button id="confirm-logout" class="btn-primary">Cerrar Sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Éxito -->
+  <div id="success-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>¡Éxito!</h3>
+      </div>
+      <div class="modal-body">
+        <p id="success-message">Los cambios se han guardado correctamente.</p>
+      </div>
+      <div class="modal-footer">
+        <button id="close-success-modal" class="btn-primary">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Error -->
+  <div id="error-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Error</h3>
+      </div>
+      <div class="modal-body">
+        <p id="error-message">Ha ocurrido un error. Por favor, inténtalo de nuevo.</p>
+      </div>
+      <div class="modal-footer">
+        <button id="close-error-modal" class="btn-primary">Entendido</button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  /* Navbar Styles */
+  .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(229, 231, 235, 0.3);
+    z-index: 1000;
+    padding: 0.75rem 0;
+  }
+
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+  }
+
+  .nav-logo h2 {
+    margin: 0;
+    color: #4f46e5;
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .nav-link {
+    text-decoration: none;
+    color: #6b7280;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    transition: all 0.3s ease;
+  }
+
+  .nav-link:hover {
+    color: #4f46e5;
+    background: rgba(79, 70, 229, 0.1);
+  }
+
+  .nav-link.active {
+    color: #4f46e5;
+    background: rgba(79, 70, 229, 0.1);
+    font-weight: 600;
+  }
+
+  .logout-nav-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .logout-nav-btn:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+  }
+
+  .main-content {
+    margin-top: 70px;
+  }
+
+  /* Header Styles */
+  .dashboard-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .main-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  /* Profile Content */
+  .dashboard-container {
+    max-width: 1200px;
+    margin: -2rem auto 0;
+    padding: 0 2rem 2rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .profile-section {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 0;
+  }
+
+  .section-header {
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-description {
+    color: #6b7280;
+    margin: 0;
+  }
+
+  /* Form Styles */
+  .profile-form {
+    width: 100%;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .security-grid {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group.full-width {
+    grid-column: 1 / -1;
+  }
+
+  /* Hacer que el dropdown ocupe desde la segunda columna hasta el final */
+  .form-group:has(.dropdown-container) {
+    grid-column: 2 / -1;
+  }
+
+  @media (max-width: 1024px) {
+    .form-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    
+    .form-group:has(.dropdown-container) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .form-input,
+  .form-textarea {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+  }
+
+  .form-input:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+  }
+
+  .btn-primary:disabled {
+    background: #d1d5db;
+    color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-primary:disabled:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+  }
+
+  .btn-secondary:hover {
+    background: #d1d5db;
+  }
+
+  .btn-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* Dropdown Styles */
+  .dropdown-container {
+    position: relative;
+    width: 100%;
+    z-index: 1;
+  }
+
+  .dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    position: relative;
+    z-index: 2;
+  }
+
+  .dropdown-header:hover {
+    border-color: #d1d5db;
+  }
+
+  .dropdown-header.active {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .dropdown-placeholder {
+    color: #6b7280;
+    font-size: 1rem;
+  }
+
+  .dropdown-placeholder.has-selection {
+    color: #374151;
+  }
+
+  .dropdown-arrow {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #6b7280;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .dropdown-header.active .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+
+  .dropdown-content {
+    position: absolute;
+    top: calc(100% - 2px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #4f46e5;
+    border-top: none;
+    border-radius: 0 0 0.5rem 0.5rem;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .dropdown-content.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .dropdown-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .dropdown-loading .loading-animation {
+    display: flex;
+    gap: 0.3rem;
+    margin-bottom: 1rem;
+  }
+
+  .dropdown-loading .loading-circle {
+    width: 0.4rem;
+    height: 0.4rem;
+    background: #4f46e5;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+  }
+
+  .dropdown-loading .loading-circle:nth-child(1) { animation-delay: -0.32s; }
+  .dropdown-loading .loading-circle:nth-child(2) { animation-delay: -0.16s; }
+
+  .dropdown-loading p {
+    color: #6b7280;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .dropdown-option {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .dropdown-option:last-child {
+    border-bottom: none;
+  }
+
+  .dropdown-option:hover {
+    background-color: #f9fafb;
+  }
+
+  .dropdown-checkbox {
+    margin-right: 0.75rem;
+    width: 1rem;
+    height: 1rem;
+    accent-color: #4f46e5;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .dropdown-label {
+    flex: 1;
+    font-size: 0.875rem;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+    line-height: 1.4;
+  }
+
+  .selected-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #4f46e5;
+    color: white;
+    border-radius: 999px;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    min-width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 1rem;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+  }
+
+  .modal-overlay.show .modal-content {
+    transform: translateY(0);
+  }
+
+  .modal-header {
+    padding: 1.5rem 1.5rem 0;
+  }
+
+  .modal-header h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .modal-body {
+    padding: 1rem 1.5rem;
+  }
+
+  .modal-body p {
+    margin: 0;
+    color: #6b7280;
+    line-height: 1.5;
+  }
+
+  .modal-footer {
+    padding: 0 1.5rem 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .nav-container {
+      padding: 0 1rem;
+    }
+    
+    .nav-links {
+      gap: 1rem;
+    }
+    
+    .nav-logo h2 {
+      font-size: 1rem;
+    }
+    
+    .header-content {
+      padding: 0 1rem;
+    }
+    
+    .main-title {
+      font-size: 2rem;
+    }
+    
+    .dashboard-container {
+      padding: 0 1rem 2rem;
+      margin-top: -1rem;
+    }
+    
+    .profile-section {
+      padding: 1.5rem;
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .form-actions {
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  console.log('🚀 PERFIL SCRIPT INICIADO');
+  
+  const API_BASE_URL = 'http://localhost:3001/api';
+  let userData: any = null;
+  let categorias: any[] = [];
+  let selectedCategorias: number[] = [];
+
+  // Servicio para autenticación y headers
+  const AuthService = {
+    getAuthHeaders() {
+      const token = localStorage.getItem('authToken');
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      };
+    }
+  };
+
+  // Servicio para usuario
+  const UserService = {
+    async getProfile() {
+      try {
+        const response = await fetch(API_BASE_URL + '/auth/profile', {
+          method: 'GET',
+          headers: AuthService.getAuthHeaders()
+        });
+        return await response.json();
+      } catch (error) {
+        console.error('Error obteniendo perfil:', error);
+        return { success: false, message: 'Error de conexión' };
+      }
+    },
+
+    async updateProfile(profileData: any) {
+      try {
+        const response = await fetch(API_BASE_URL + '/auth/profile', {
+          method: 'PUT',
+          headers: AuthService.getAuthHeaders(),
+          body: JSON.stringify(profileData)
+        });
+        return await response.json();
+      } catch (error) {
+        console.error('Error actualizando perfil:', error);
+        return { success: false, message: 'Error de conexión' };
+      }
+    },
+
+    async changePassword(passwordData: any) {
+      try {
+        const response = await fetch(API_BASE_URL + '/password/change', {
+          method: 'POST',
+          headers: AuthService.getAuthHeaders(),
+          body: JSON.stringify(passwordData)
+        });
+        return await response.json();
+      } catch (error) {
+        console.error('Error cambiando contraseña:', error);
+        return { success: false, message: 'Error de conexión' };
+      }
+    },
+
+    async verifyCurrentPassword(currentPassword: string) {
+      try {
+        const response = await fetch(API_BASE_URL + '/password/verify', {
+          method: 'POST',
+          headers: AuthService.getAuthHeaders(),
+          body: JSON.stringify({ currentPassword })
+        });
+        return await response.json();
+      } catch (error) {
+        console.error('Error verificando contraseña:', error);
+        return { success: false, message: 'Error de conexión' };
+      }
+    }
+  };
+
+  // Servicio para categorías
+  const CategoriasService = {
+    async getCategorias() {
+      try {
+        const response = await fetch(API_BASE_URL + '/eventos/categorias', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        return await response.json();
+      } catch (error) {
+        console.error('Error obteniendo categorías:', error);
+        return { success: false, message: 'Error de conexión' };
+      }
+    }
+  };
+
+  // Función para cargar categorías
+  async function loadCategorias() {
+    console.log('📂 Cargando categorías...');
+    
+    try {
+      const response = await CategoriasService.getCategorias();
+      console.log('📂 Respuesta de categorías:', response);
+      
+      if (response.success && response.categorias) {
+        categorias = response.categorias;
+        renderCategoriasDropdown();
+      } else {
+        console.error('❌ Error cargando categorías:', response.message);
+        showCategoriesError();
+      }
+    } catch (error) {
+      console.error('❌ Error cargando categorías:', error);
+      showCategoriesError();
+    }
+  }
+
+  // Función para renderizar el dropdown de categorías
+  function renderCategoriasDropdown() {
+    const dropdownContent = document.getElementById('dropdown-content');
+    if (!dropdownContent) return;
+
+    let html = '';
+    categorias.forEach(categoria => {
+      const isSelected = selectedCategorias.includes(categoria.id_categoria);
+      html += `
+        <div class="dropdown-option" data-categoria-id="${categoria.id_categoria}">
+          <input 
+            type="checkbox" 
+            class="dropdown-checkbox" 
+            id="categoria-${categoria.id_categoria}"
+            ${isSelected ? 'checked' : ''}
+            onchange="toggleCategoria(${categoria.id_categoria})"
+          >
+          <label for="categoria-${categoria.id_categoria}" class="dropdown-label">
+            ${categoria.nombre}
+          </label>
+        </div>
+      `;
+    });
+
+    dropdownContent.innerHTML = html;
+    updateDropdownHeader();
+    console.log('✅ Dropdown de categorías renderizado');
+  }
+
+  // Función para mostrar error en categorías
+  function showCategoriesError() {
+    const dropdownContent = document.getElementById('dropdown-content');
+    if (!dropdownContent) return;
+
+    dropdownContent.innerHTML = `
+      <div class="dropdown-loading">
+        <p style="color: #ef4444;">Error al cargar las categorías</p>
+      </div>
+    `;
+  }
+
+  // Función para alternar selección de categoría
+  function toggleCategoria(categoriaId: number) {
+    const index = selectedCategorias.indexOf(categoriaId);
+    if (index > -1) {
+      selectedCategorias.splice(index, 1);
+    } else {
+      selectedCategorias.push(categoriaId);
+    }
+    
+    updateDropdownHeader();
+    updateHiddenInput();
+    console.log('📂 Categorías seleccionadas:', selectedCategorias);
+  }
+
+  // Función para actualizar el header del dropdown
+  function updateDropdownHeader() {
+    const placeholder = document.querySelector('.dropdown-placeholder') as HTMLElement;
+    if (!placeholder) return;
+
+    if (selectedCategorias.length === 0) {
+      placeholder.textContent = 'Selecciona tus intereses y habilidades';
+      placeholder.classList.remove('has-selection');
+      // Remover contador si existe
+      const existingCount = placeholder.parentElement?.querySelector('.selected-count');
+      if (existingCount) {
+        existingCount.remove();
+      }
+    } else {
+      const selectedNames = selectedCategorias.map(id => {
+        const categoria = categorias.find(c => c.id_categoria === id);
+        return categoria ? categoria.nombre : '';
+      }).filter(name => name).slice(0, 2); // Mostrar máximo 2 nombres
+
+      let displayText = selectedNames.join(', ');
+      if (selectedCategorias.length > 2) {
+        displayText += ` y ${selectedCategorias.length - 2} más`;
+      }
+
+      placeholder.textContent = displayText;
+      placeholder.classList.add('has-selection');
+
+      // Agregar o actualizar contador
+      let countElement = placeholder.parentElement?.querySelector('.selected-count') as HTMLElement;
+      if (!countElement) {
+        countElement = document.createElement('span');
+        countElement.className = 'selected-count';
+        placeholder.parentElement?.appendChild(countElement);
+      }
+      countElement.textContent = selectedCategorias.length.toString();
+    }
+    
+    // Detectar cambios cuando se actualiza el dropdown
+    detectFormChanges();
+  }
+
+  // Función para actualizar el campo oculto
+  function updateHiddenInput() {
+    const hiddenInput = document.getElementById('habilidades_intereses') as HTMLInputElement;
+    if (hiddenInput) {
+      hiddenInput.value = JSON.stringify(selectedCategorias);
+    }
+    
+    // Detectar cambios cuando se actualiza el campo oculto
+    detectFormChanges();
+  }
+
+  // Función para parsear las habilidades/intereses del usuario
+  function parseUserHabilidades(habilidadesStr: string) {
+    if (!habilidadesStr) return [];
+    
+    try {
+      // Si es un JSON array de IDs
+      const parsed = JSON.parse(habilidadesStr);
+      if (Array.isArray(parsed) && parsed.every(item => typeof item === 'number')) {
+        return parsed;
+      }
+    } catch (e) {
+      // Si no es JSON válido, intentar parsearlo como texto plano
+      console.log('Parseando habilidades como texto plano:', habilidadesStr);
+    }
+    
+    return [];
+  }
+  async function loadUserProfile() {
+    console.log('👤 Cargando perfil del usuario...');
+    
+    try {
+      const response = await UserService.getProfile();
+      console.log('👤 Respuesta del perfil:', response);
+      
+      if (response.success && response.data) {
+        userData = response.data;
+        fillProfileForm();
+      } else {
+        console.log('❌ Error cargando perfil:', response.message);
+        showErrorModal('Error al cargar el perfil del usuario');
+      }
+    } catch (error) {
+      console.error('❌ Error cargando perfil:', error);
+      showErrorModal('Error de conexión al cargar el perfil');
+    }
+  }
+
+  // Función para llenar el formulario con los datos del usuario
+  function fillProfileForm() {
+    if (!userData) return;
+
+    const usernameInput = document.getElementById('username') as HTMLInputElement;
+    const nombreInput = document.getElementById('nombre') as HTMLInputElement;
+    const correoInput = document.getElementById('correo') as HTMLInputElement;
+    const telefonoInput = document.getElementById('telefono') as HTMLInputElement;
+    const direccionInput = document.getElementById('direccion') as HTMLInputElement;
+
+    if (usernameInput) usernameInput.value = userData.username || '';
+    if (nombreInput) nombreInput.value = userData.nombre || userData.nombreCompleto || '';
+    if (correoInput) correoInput.value = userData.correo || userData.email || '';
+    if (telefonoInput) telefonoInput.value = userData.telefono || '';
+    if (direccionInput) direccionInput.value = userData.direccion || '';
+
+    // Manejar habilidades/intereses como array de IDs de categorías
+    if (userData.interes_habilidades) {
+      selectedCategorias = parseUserHabilidades(userData.interes_habilidades);
+      updateHiddenInput();
+      
+      // Si ya se cargaron las categorías, actualizar el dropdown
+      if (categorias.length > 0) {
+        renderCategoriasDropdown();
+      }
+    }
+
+    console.log('✅ Formulario llenado con datos del usuario');
+    console.log('📂 Categorías seleccionadas del usuario:', selectedCategorias);
+    
+    // Almacenar valores originales para detectar cambios
+    storeOriginalValues();
+    
+    // Deshabilitar botón inicialmente (sin cambios)
+    const saveGeneralBtn = document.getElementById('save-general-btn') as HTMLButtonElement;
+    if (saveGeneralBtn) {
+      saveGeneralBtn.disabled = true;
+    }
+  }
+
+  // Variables para almacenar valores originales
+  let originalValues = {
+    username: '',
+    nombre: '',
+    correo: '',
+    telefono: '',
+    direccion: '',
+    habilidades_intereses: [] as number[]
+  };
+
+  // Función para almacenar valores originales
+  function storeOriginalValues() {
+    if (!userData) return;
+    
+    originalValues = {
+      username: userData.username || '',
+      nombre: userData.nombre || userData.nombreCompleto || '',
+      correo: userData.correo || userData.email || '',
+      telefono: userData.telefono || '',
+      direccion: userData.direccion || '',
+      habilidades_intereses: [...selectedCategorias] // Copia del array
+    };
+    
+    console.log('📦 Valores originales almacenados:', originalValues);
+  }
+
+  // Función para detectar cambios en el formulario
+  function detectFormChanges() {
+    const usernameInput = document.getElementById('username') as HTMLInputElement;
+    const nombreInput = document.getElementById('nombre') as HTMLInputElement;
+    const correoInput = document.getElementById('correo') as HTMLInputElement;
+    const telefonoInput = document.getElementById('telefono') as HTMLInputElement;
+    const direccionInput = document.getElementById('direccion') as HTMLInputElement;
+
+    if (!usernameInput || !nombreInput || !correoInput || !telefonoInput || !direccionInput) {
+      return false;
+    }
+
+    const currentValues = {
+      username: usernameInput.value.trim(),
+      nombre: nombreInput.value.trim(),
+      correo: correoInput.value.trim(),
+      telefono: telefonoInput.value.trim(),
+      direccion: direccionInput.value.trim(),
+      habilidades_intereses: selectedCategorias
+    };
+
+    // Comparar valores actuales con originales
+    const hasChanges = (
+      currentValues.username !== originalValues.username ||
+      currentValues.nombre !== originalValues.nombre ||
+      currentValues.correo !== originalValues.correo ||
+      currentValues.telefono !== originalValues.telefono ||
+      currentValues.direccion !== originalValues.direccion ||
+      !arraysEqual(currentValues.habilidades_intereses, originalValues.habilidades_intereses)
+    );
+
+    // Habilitar/deshabilitar botón según si hay cambios
+    const saveGeneralBtn = document.getElementById('save-general-btn') as HTMLButtonElement;
+    if (saveGeneralBtn) {
+      saveGeneralBtn.disabled = !hasChanges;
+    }
+
+    return hasChanges;
+  }
+
+  // Función auxiliar para comparar arrays
+  function arraysEqual(a: number[], b: number[]): boolean {
+    if (a.length !== b.length) return false;
+    return a.sort().every((val, index) => val === b.sort()[index]);
+  }
+
+  // Función para manejar el envío del formulario de información general
+  async function handleGeneralInfoSubmit(event: Event) {
+    event.preventDefault();
+    console.log('📝 Enviando formulario de información general...');
+
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+    
+    const profileData = {
+      username: formData.get('username'),
+      nombre: formData.get('nombre'),
+      correo: formData.get('correo'),
+      telefono: formData.get('telefono'),
+      direccion: formData.get('direccion'),
+      habilidades_intereses: formData.get('habilidades_intereses') // Ya viene como JSON string
+    };
+
+    console.log('📤 Datos a enviar:', profileData);
+
+    try {
+      const saveBtn = document.getElementById('save-general-btn') as HTMLButtonElement;
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<svg class="btn-icon animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>Guardando...';
+      }
+
+      const response = await UserService.updateProfile(profileData);
+      
+      if (response.success) {
+        console.log('✅ Perfil actualizado exitosamente');
+        showSuccessModal('Tu información ha sido actualizada correctamente');
+        userData = { ...userData, ...profileData };
+        
+        // Actualizar valores originales después de guardar
+        storeOriginalValues();
+        
+        // El botón se deshabilitará automáticamente porque ya no hay cambios
+        detectFormChanges();
+      } else {
+        console.error('❌ Error actualizando perfil:', response.message);
+        showErrorModal(response.message || 'Error al actualizar el perfil');
+      }
+    } catch (error) {
+      console.error('❌ Error:', error);
+      showErrorModal('Error de conexión al actualizar el perfil');
+    } finally {
+      const saveBtn = document.getElementById('save-general-btn') as HTMLButtonElement;
+      if (saveBtn) {
+        saveBtn.innerHTML = '<svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Confirmar Cambios';
+        // No cambiar disabled aquí, dejarlo que detectFormChanges lo maneje
+      }
+    }
+  }
+
+  // Función para manejar el envío del formulario de seguridad
+  async function handleSecuritySubmit(event: Event) {
+    event.preventDefault();
+    console.log('🔒 Enviando formulario de seguridad...');
+
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+    
+    const passwordActual = formData.get('password_actual') as string;
+    const passwordNueva = formData.get('password_nueva') as string;
+    const passwordConfirmar = formData.get('password_confirmar') as string;
+
+    // Validar que las contraseñas coincidan
+    if (passwordNueva !== passwordConfirmar) {
+      showErrorModal('Las contraseñas nuevas no coinciden');
+      return;
+    }
+
+    // Validar longitud mínima
+    if (passwordNueva.length < 6) {
+      showErrorModal('La nueva contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    const passwordData = {
+      currentPassword: passwordActual,
+      newPassword: passwordNueva
+    };
+
+    console.log('📤 Cambiando contraseña...');
+
+    try {
+      const saveBtn = document.getElementById('save-security-btn') as HTMLButtonElement;
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<svg class="btn-icon animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>Cambiando...';
+      }
+
+      const response = await UserService.changePassword(passwordData);
+      
+      if (response.success) {
+        console.log('✅ Contraseña cambiada exitosamente');
+        showSuccessModal('Tu contraseña ha sido cambiada correctamente');
+        form.reset();
+      } else {
+        console.error('❌ Error cambiando contraseña:', response.message);
+        showErrorModal(response.message || 'Error al cambiar la contraseña');
+      }
+    } catch (error) {
+      console.error('❌ Error:', error);
+      showErrorModal('Error de conexión al cambiar la contraseña');
+    } finally {
+      const saveBtn = document.getElementById('save-security-btn') as HTMLButtonElement;
+      if (saveBtn) {
+        saveBtn.innerHTML = '<svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>Confirmar Cambios';
+        // Después de reset, volver a validar (debería deshabilitar el botón)
+        validateSecurityForm();
+      }
+    }
+  }
+
+  // ===== FUNCIONES DE VALIDACIÓN DE SEGURIDAD =====
+  
+  // Función para validar el formulario de seguridad
+  function validateSecurityForm() {
+    const passwordActual = document.getElementById('password-actual') as HTMLInputElement;
+    const passwordNueva = document.getElementById('password-nueva') as HTMLInputElement;
+    const passwordConfirmar = document.getElementById('password-confirmar') as HTMLInputElement;
+    const saveSecurityBtn = document.getElementById('save-security-btn') as HTMLButtonElement;
+
+    if (!passwordActual || !passwordNueva || !passwordConfirmar || !saveSecurityBtn) {
+      return;
+    }
+
+    const actualValue = passwordActual.value.trim();
+    const nuevaValue = passwordNueva.value.trim();
+    const confirmarValue = passwordConfirmar.value.trim();
+
+    // Verificar que todos los campos tengan contenido
+    const allFieldsFilled = actualValue.length > 0 && nuevaValue.length > 0 && confirmarValue.length > 0;
+    
+    // Verificar que las contraseñas nuevas coincidan
+    const passwordsMatch = nuevaValue === confirmarValue;
+    
+    // Verificar longitud mínima de la nueva contraseña
+    const validLength = nuevaValue.length >= 6;
+    
+    // Verificar que contenga al menos una mayúscula, una minúscula y un número
+    const hasUpperCase = /[A-Z]/.test(nuevaValue);
+    const hasLowerCase = /[a-z]/.test(nuevaValue);
+    const hasNumber = /\d/.test(nuevaValue);
+    const validPassword = hasUpperCase && hasLowerCase && hasNumber;
+
+    // Habilitar botón solo si todo es válido
+    const isValid = allFieldsFilled && passwordsMatch && validLength && validPassword;
+    saveSecurityBtn.disabled = !isValid;
+
+    // Agregar clases visuales de error
+    if (confirmarValue && !passwordsMatch) {
+      passwordConfirmar.classList.add('error');
+    } else {
+      passwordConfirmar.classList.remove('error');
+    }
+
+    if (nuevaValue && (!validLength || !validPassword)) {
+      passwordNueva.classList.add('error');
+    } else {
+      passwordNueva.classList.remove('error');
+    }
+
+    return isValid;
+  }
+
+  // ===== FUNCIONES DE MODALES =====
+  function showSuccessModal(message: string) {
+    const modal = document.getElementById('success-modal');
+    const messageElement = document.getElementById('success-message');
+    if (modal && messageElement) {
+      messageElement.textContent = message;
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function showErrorModal(message: string) {
+    const modal = document.getElementById('error-modal');
+    const messageElement = document.getElementById('error-message');
+    if (modal && messageElement) {
+      messageElement.textContent = message;
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function hideModal(modalId: string) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+  }
+
+  // ===== FUNCIONES DE LOGOUT =====
+  function showLogoutModal() {
+    const modal = document.getElementById('logout-modal');
+    if (modal) {
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function hideLogoutModal() {
+    const modal = document.getElementById('logout-modal');
+    if (modal) {
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      const response = await fetch(API_BASE_URL + '/auth/logout', {
+        method: 'POST',
+        headers: AuthService.getAuthHeaders()
+      });
+
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userType');
+      window.location.href = '/login';
+    } catch (error) {
+      console.error('Error during logout:', error);
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userType');
+      window.location.href = '/login';
+    }
+  }
+
+  // Inicializar
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('📄 DOM listo');
+    
+    // Configurar formularios
+    const generalForm = document.getElementById('general-info-form');
+    const securityForm = document.getElementById('security-form');
+
+    if (generalForm) {
+      generalForm.addEventListener('submit', handleGeneralInfoSubmit);
+    }
+
+    if (securityForm) {
+      securityForm.addEventListener('submit', handleSecuritySubmit);
+    }
+
+    // Configurar validación para formulario de seguridad
+    const securityInputs = [
+      'password-actual',
+      'password-nueva', 
+      'password-confirmar'
+    ];
+
+    securityInputs.forEach(inputId => {
+      const input = document.getElementById(inputId) as HTMLInputElement;
+      if (input) {
+        input.addEventListener('input', validateSecurityForm);
+        input.addEventListener('blur', validateSecurityForm);
+      }
+    });
+
+    // Deshabilitar botón de seguridad inicialmente
+    const saveSecurityBtn = document.getElementById('save-security-btn') as HTMLButtonElement;
+    if (saveSecurityBtn) {
+      saveSecurityBtn.disabled = true;
+    }
+
+    // Configurar detectores de cambios para el formulario general
+    const formInputs = [
+      'username',
+      'nombre', 
+      'correo',
+      'telefono',
+      'direccion'
+    ];
+
+    formInputs.forEach(inputId => {
+      const input = document.getElementById(inputId) as HTMLInputElement;
+      if (input) {
+        input.addEventListener('input', detectFormChanges);
+        input.addEventListener('blur', detectFormChanges);
+      }
+    });
+
+    // Configurar dropdown de categorías
+    const dropdownHeader = document.getElementById('dropdown-header');
+    const dropdownContent = document.getElementById('dropdown-content');
+
+    if (dropdownHeader && dropdownContent) {
+      dropdownHeader.addEventListener('click', function() {
+        const isActive = dropdownHeader.classList.contains('active');
+        
+        if (isActive) {
+          dropdownHeader.classList.remove('active');
+          dropdownContent.classList.remove('show');
+        } else {
+          dropdownHeader.classList.add('active');
+          dropdownContent.classList.add('show');
+        }
+      });
+
+      // Cerrar dropdown al hacer click fuera
+      document.addEventListener('click', function(e) {
+        if (!dropdownHeader.contains(e.target as Node) && !dropdownContent.contains(e.target as Node)) {
+          dropdownHeader.classList.remove('active');
+          dropdownContent.classList.remove('show');
+        }
+      });
+    }
+
+    // Configurar botones de modales
+    const closeSuccessBtn = document.getElementById('close-success-modal');
+    const closeErrorBtn = document.getElementById('close-error-modal');
+
+    if (closeSuccessBtn) {
+      closeSuccessBtn.addEventListener('click', () => hideModal('success-modal'));
+    }
+
+    if (closeErrorBtn) {
+      closeErrorBtn.addEventListener('click', () => hideModal('error-modal'));
+    }
+
+    // Configurar logout
+    const logoutBtn = document.getElementById('logout-btn');
+    const cancelLogout = document.getElementById('cancel-logout');
+    const confirmLogout = document.getElementById('confirm-logout');
+    const logoutModal = document.getElementById('logout-modal');
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', showLogoutModal);
+    }
+
+    if (cancelLogout) {
+      cancelLogout.addEventListener('click', hideLogoutModal);
+    }
+
+    if (confirmLogout) {
+      confirmLogout.addEventListener('click', handleLogout);
+    }
+
+    if (logoutModal) {
+      logoutModal.addEventListener('click', function(e) {
+        if (e.target === logoutModal) {
+          hideLogoutModal();
+        }
+      });
+    }
+
+    // Cargar datos
+    loadCategorias();
+    loadUserProfile();
+  });
+
+  // Hacer toggleCategoria accesible globalmente para los event handlers
+  (window as any).toggleCategoria = toggleCategoria;
+</script>

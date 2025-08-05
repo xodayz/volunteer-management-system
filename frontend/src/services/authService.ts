@@ -169,6 +169,53 @@ class AuthServiceClass {
       return false;
     }
   }
+
+  async getProfile(): Promise<ApiResponse> {
+    try {
+      const token = this.getToken();
+      if (!token) {
+        return { success: false, message: 'No hay token de autenticación' };
+      }
+
+      const response = await fetch(`${this.baseUrl}/auth/profile`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error obteniendo perfil:', error);
+      return { success: false, message: 'Error de conexión' };
+    }
+  }
+
+  async updateProfile(profileData: any): Promise<ApiResponse> {
+    try {
+      const token = this.getToken();
+      if (!token) {
+        return { success: false, message: 'No hay token de autenticación' };
+      }
+
+      const response = await fetch(`${this.baseUrl}/auth/profile`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error actualizando perfil:', error);
+      return { success: false, message: 'Error de conexión' };
+    }
+  }
 }
 
 export const AuthService = new AuthServiceClass();

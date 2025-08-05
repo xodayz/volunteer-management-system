@@ -188,5 +188,39 @@ class AuthController {
             });
         });
     }
+    
+    static updateProfile(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log('🔄 AuthController: Iniciando actualización de perfil');
+                console.log('👤 AuthController: Usuario ID:', req.user.id);
+                console.log('📝 AuthController: Datos del body:', req.body);
+                const userId = req.user.id;
+                const updateData = req.body;
+                const result = yield AuthService_1.AuthService.updateProfile(userId, updateData);
+                console.log('📊 AuthController: Resultado del servicio:', result);
+                if (result.success) {
+                    res.json({
+                        success: true,
+                        message: 'Perfil actualizado exitosamente',
+                        data: result.data
+                    });
+                }
+                else {
+                    res.status(400).json({
+                        success: false,
+                        message: result.message
+                    });
+                }
+            }
+            catch (error) {
+                console.error('❌ AuthController: Error en updateProfile:', error);
+                res.status(500).json({
+                    success: false,
+                    message: 'Error interno del servidor'
+                });
+            }
+        });
+    }
 }
 exports.AuthController = AuthController;
